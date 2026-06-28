@@ -1,0 +1,50 @@
+Pro Developer Tip
+
+Always run before push:
+
+forge fmt
+forge build
+forge test
+
+
+Then push.
+
+Perfect 👍 let’s push your Nexvel project to GitHub step-by-step.
+
+🚀 1️⃣ Check Current Git Status
+
+Inside your project folder:
+
+git status
+
+
+If files are red → they are not committed yet.
+
+🧹 2️⃣ Add All Files
+git add .
+
+
+Or specific file:
+
+git add script/NFT/02_DeployMarketplaceV2.s.sol
+
+📝 3️⃣ Commit Changes
+git commit -m "Fix UUPS upgrade formatting & deployment scripts"
+
+🌍 4️⃣ Push To GitHub
+
+If branch is already connected to origin:
+
+git push
+
+
+📌 Check Remote Repo
+
+To confirm where you're pushing:
+
+git remote -v
+
+Example output:
+
+origin  https://github.com/yourname/nexvel-token.git (fetch)
+origin  https://github.com/yourname/nexvel-token.git (push)

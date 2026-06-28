@@ -1,0 +1,172 @@
+ #Restart the Indexer
+1️⃣ npx ts-node src/index.ts
+
+#i ALREADY Grant CREATOR_ROLE in Deploy Security 
+#Your factory checks CREATOR_ROLE in Security.
+#Compute role hash:
+2️⃣ cast keccak "CREATOR_ROLE"
+Example result (save it).
+
+Then grant role:
+3️⃣
+cast send <Security Contract> \
+"grantRole(bytes32,address)" \
+<CREATOR_ROLE_HASH> \
+<New Creator Role> \
+--private-key <Private Key> \
+--rpc-url http://127.0.0.1:8545
+
+Create NFT Collection
+Using Factory
+
+cast send <NFT Factory Contract Address> \
+"createNFT(string,string,uint8,address,address[],uint256)" \
+<name_> \
+<symbol_,> \
+<nftType> (0 for ERC721, 1 For ERC1155 Batch Mint) \
+<operator_> \
+"[creators_]" \
+<maxSupply_> \
+--private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+--rpc-url http://127.0.0.1:8545
+
+
+After this transaction, run:
+
+cast receipt <TX_HASH> --rpc-url http://127.0.0.1:8545
+
+Look for event:
+
+NFTCreated
+
+Copy the new NFT contract address.
+
+
+
+3️⃣ Mint NFT
+
+Your ERC721 likely has:
+function directMint(address to, string calldata uri, address royaltyReceiver, uint96 royaltyBps);
+or Other Types of Mint
+
+cast send <New NFT Address> \
+"directMint(address,string,address,uint96)" \
+0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 \
+"https://nexvel.xyz/metadata/1.json" \
+0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 \
+500 \
+--private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+--rpc-url http://127.0.0.1:8545
+
+This creates tokenId 1.
+
+
+
+
+4️⃣ Allow Collection in Marketplace
+
+Your marketplace blocks unknown collections.
+
+cast send <Marketplace Address> \
+"setAllowedCollection(address,bool)" \
+<NEW_NFT> true \
+--private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+--rpc-url http://127.0.0.1:8545
+
+5️⃣ Approve Marketplace This approve function is from 
+{Both of your contracts inherit from:
+
+ERC721Upgradeable
+ERC721URIStorageUpgradeable
+ERC721AUpgradeable
+
+These already implement NFT approval functions.}
+
+cast send <NEW_NFT> \
+"approve(address,uint256)" \
+<Marketplace Address> \
+1 <--(This is Token id)\
+--private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+--rpc-url http://127.0.0.1:8545
+
+
+
+6️⃣ List NFT
+cast send <MARKETPLACE_ADDRESS> \
+"list(address,uint256,uint256,address,bool)" \
+<New NFT> \
+1 (Token id)\
+100000000000000000000 (Price) \
+0xNXV_TOKEN_ADDRESS \
+true (If ERC20 token ? true : false)\
+--private-key <OWNER_PRIVATE_KEY> \
+--rpc-url http://127.0.0.1:8545
+
+
+
+When do you need it?
+Deploying to cloud (AWS, GCP, DigitalOcean, Render)
+Want consistent environment (no “works on my machine” issues)
+Minimum steps
+Create a Dockerfile in your project root:
+FROM node:20
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+CMD ["node", "dist/server.js"]
+
+
+Build the image:
+docker build -t nexvel-backend .
+Run it:
+docker run -p 4000:4000 \
+  -e DATABASE_URL=... \
+  -e REDIS_URL=... \
+  -e JWT_SECRET=... \
+  nexvel-backend
+
+👉 Now your app runs inside Docker at http://localhost:4000.
+
+
+
+
+Do you have to use Docker?
+
+No. It’s recommended for production, but you can deploy without it (using PM2 below).
+
+⚙️ 10) PM2 — “keep your server running 24/7”
+
+What it does:
+Runs your Node app as a process manager:
+
+Restarts if it crashes
+Keeps it running after server reboot
+Can run multiple instances (scaling)
+When do you need it?
+You deploy on a VPS (Ubuntu, EC2, etc.)
+You want uptime without babysitting
+Setup PM2 (super simple)
+Install globally:
+npm install -g pm2
+Build your app:
+npm run build
+Start your server:
+pm2 start dist/server.js --name nexvel
+Save process (auto-restart on reboot):
+pm2 save
+pm2 startup
+Useful PM2 commands
+pm2 list        # see running apps
+pm2 logs        # view logs
+pm2 restart nexvel
+pm2 stop nexvel
+🧠 Simple analogy
+Docker = your app in a sealed box (portable everywhere)
+PM2 = a supervisor that keeps your app alive

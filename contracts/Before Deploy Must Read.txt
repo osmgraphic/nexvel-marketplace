@@ -1,0 +1,11 @@
+//------------------
+in NexvelToken.sol Must Remove This Function
+//------------------
+
+/*
+Remove Function
+    function upgradeTo(address newImplementation) external onlyRole(UPGRADER_ROLE) {
+        // use ERC1967Utils library instead of removed _upgradeToAndCallUUPS
+        ERC1967Utils.upgradeToAndCall(newImplementation, bytes(""));
+    }
+*/

@@ -1,0 +1,273 @@
+.
+├── Airdrop Notes
+│   └── Airdrop Mastery.md
+├── Before Deploy Must Read.txt
+├── README.md
+├── airdrop.json
+├── broadcast
+│   ├── 00_DeployAddressRegistry.s.sol
+│   │   └── 31337
+│   │       ├── run-1770998707753.json
+│   │       ├── run-1771096354108.json
+│   │       ├── run-1771219746907.json
+│   │       └── run-latest.json
+│   ├── 00_DeploySecurity.s.sol
+│   │   └── 31337
+│   │       ├── run-1770743746068.json
+│   │       ├── run-1770816156152.json
+│   │       └── run-latest.json
+│   ├── 01_DeployMarketplaceV1.s.sol
+│   │   └── 31337
+│   │       ├── run-1770745060741.json
+│   │       └── run-latest.json
+│   ├── 01_DeploySecurity.s.sol
+│   │   └── 31337
+│   │       ├── run-1770999800471.json
+│   │       └── run-latest.json
+│   ├── 02_DeployERC721Impl.s.sol
+│   │   └── 31337
+│   │       ├── run-1771096888887.json
+│   │       ├── run-1771219983868.json
+│   │       └── run-latest.json
+│   ├── 02_DeployMarketplaceV1.s.sol
+│   │   └── 31337
+│   │       ├── run-1771000352060.json
+│   │       └── run-latest.json
+│   ├── 03_DeployERC721AImpl.s.sol
+│   │   └── 31337
+│   │       ├── run-1771097025090.json
+│   │       ├── run-1771220075284.json
+│   │       └── run-latest.json
+│   ├── 04_DeployMarketplaceV3.s.sol
+│   │   └── 31337
+│   │       ├── run-1771002093113.json
+│   │       └── run-latest.json
+│   ├── 05_DeployLaunchpad.s.sol
+│   │   └── 31337
+│   │       ├── run-1771004484239.json
+│   │       └── run-latest.json
+│   ├── 06_DeployERC1155.s.sol
+│   │   └── 31337
+│   │       ├── run-1771005602328.json
+│   │       └── run-latest.json
+│   ├── 07_DeployAddressRegistry.s.sol
+│   │   └── 31337
+│   │       ├── run-1770736933645.json
+│   │       ├── run-1770737281172.json
+│   │       ├── run-1770737387920.json
+│   │       ├── run-1770816047939.json
+│   │       └── run-latest.json
+│   ├── 07_DeployNFTFactory.s.sol
+│   │   └── 31337
+│   │       ├── run-1771006002404.json
+│   │       ├── run-1771087206360.json
+│   │       └── run-latest.json
+│   ├── 09_DeployNFTFactory.s.sol
+│   │   └── 31337
+│   │       ├── run-1771220248822.json
+│   │       └── run-latest.json
+│   ├── 99_FullDeploy.s.sol
+│   │   └── 31337
+│   │       ├── run-1771087102923.json
+│   │       ├── run-1771097294283.json
+│   │       ├── run-1771220719359.json
+│   │       ├── run-1771223612440.json
+│   │       ├── run-1771226605154.json
+│   │       └── run-latest.json
+│   ├── CreateToken.s.sol
+│   │   └── 31337
+│   │       ├── run-1762514123817.json
+│   │       ├── run-1762580640789.json
+│   │       ├── run-1762611070715.json
+│   │       ├── run-1762663556949.json
+│   │       ├── run-1762664617700.json
+│   │       ├── run-1763874830276.json
+│   │       ├── run-1764736492823.json
+│   │       ├── run-1764736775118.json
+│   │       ├── run-1764738610940.json
+│   │       ├── run-1764741096560.json
+│   │       ├── run-1764912296718.json
+│   │       ├── run-1764921541108.json
+│   │       ├── run-1764995085464.json
+│   │       ├── run-1767009065076.json
+│   │       └── run-latest.json
+│   ├── DeployFactory.s.sol
+│   │   └── 31337
+│   │       ├── run-1762496387225.json
+│   │       ├── run-1762579482645.json
+│   │       ├── run-1762610712325.json
+│   │       ├── run-1762663223155.json
+│   │       ├── run-1762664672981.json
+│   │       ├── run-1763873120068.json
+│   │       ├── run-1764736360469.json
+│   │       ├── run-1764738507872.json
+│   │       ├── run-1764912138782.json
+│   │       ├── run-1764912205966.json
+│   │       ├── run-1764921439326.json
+│   │       ├── run-1764994974426.json
+│   │       ├── run-1767007525783.json
+│   │       ├── run-1767008398769.json
+│   │       └── run-latest.json
+│   ├── DeployGovernance.s.sol
+│   │   └── 31337
+│   │       ├── run-1762614097781.json
+│   │       ├── run-1762664806750.json
+│   │       ├── run-1763880046016.json
+│   │       ├── run-1767009185985.json
+│   │       └── run-latest.json
+│   ├── DeployMerkleAirdrop.s.sol
+│   │   └── 31337
+│   │       ├── run-1765374587337.json
+│   │       └── run-latest.json
+│   ├── DeployNexvelToken.s.sol
+│   │   ├── 31337
+│   │   │   ├── run-1760525499709.json
+│   │   │   ├── run-1760678617810.json
+│   │   │   ├── run-1760678709373.json
+│   │   │   ├── run-1762578649706.json
+│   │   │   └── run-latest.json
+│   │   └── 97
+│   │       ├── run-1760521446039.json
+│   │       └── run-latest.json
+│   ├── DeployNftMarketplace.s.sol
+│   │   └── 31337
+│   │       ├── run-1768586049767.json
+│   │       ├── run-1768586210180.json
+│   │       └── run-latest.json
+│   ├── DeployNftMarketplaceV2.s.sol
+│   │   └── 31337
+│   │       ├── run-1768587845172.json
+│   │       └── run-latest.json
+│   ├── DeploySignatureAirdrop.s.sol
+│   │   └── 31337
+│   │       ├── run-1767000522782.json
+│   │       └── run-latest.json
+│   ├── DeployTreasury.s.sol
+│   │   └── 31337
+│   │       ├── run-1763891308494.json
+│   │       ├── run-1767009782010.json
+│   │       └── run-latest.json
+│   ├── FundTreasury.s.sol
+│   │   └── 31337
+│   │       ├── run-1767017295682.json
+│   │       └── run-latest.json
+│   └── StakingPool.s.sol
+│       └── 31337
+│           ├── run-1764255975889.json
+│           ├── run-1764587403057.json
+│           ├── run-1764767263588.json
+│           ├── run-1764912463198.json
+│           ├── run-1764920070845.json
+│           ├── run-1764921634561.json
+│           ├── run-1764995172012.json
+│           └── run-latest.json
+├── folder-structure.txt
+├── foundry.lock
+├── foundry.toml
+├── frontend
+│   ├── README.md
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   │   └── vite.svg
+│   ├── src
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── abis
+│   │   │   ├── NexvelToken.json
+│   │   │   └── StakingPool.json
+│   │   ├── assets
+│   │   │   └── react.svg
+│   │   ├── chains
+│   │   │   └── anvil.js
+│   │   ├── components
+│   │   │   └── MyStakes.jsx
+│   │   ├── constants
+│   │   │   ├── staking.js
+│   │   │   └── token.js
+│   │   ├── hooks
+│   │   │   ├── useApprove.js
+│   │   │   └── useStake.js
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   └── wagmi.js
+│   └── vite.config.js
+├── generateMerkle.js
+├── gitpush.txt
+├── package-lock.json
+├── package.json
+├── proofs.json
+├── script
+│   ├── CreateToken.s.sol
+│   ├── Dao
+│   │   ├── DaoCreateProposal.s.sol
+│   │   ├── DaoExecuteProposal.s.sol
+│   │   ├── DaoRegisterModulesProposal.s.sol
+│   │   └── DaoVoteProposal.s.sol
+│   ├── DeployFactory.s.sol
+│   ├── DeployGovernance.s.sol
+│   ├── DeployMerkleAirdrop.s.sol
+│   ├── DeploySignatureAirdrop.s.sol
+│   ├── DeployTreasury.s.sol
+│   ├── FundTreasury.s.sol
+│   ├── NFT
+│   │   ├── 00_DeployAddressRegistry.s.sol
+│   │   ├── 01_DeploySecurity.s.sol
+│   │   ├── 02_DeployERC721Impl.s.sol
+│   │   ├── 03_DeployERC721AImpl.s.sol
+│   │   ├── 04_DeployMarketplace.s.sol
+│   │   ├── 05_DeployMarketplaceV2.s.sol
+│   │   ├── 06_DeployMarketplaceV3.s.sol
+│   │   ├── 07_DeployLaunchpad.s.sol
+│   │   ├── 08_DeployERC1155.s.sol
+│   │   ├── 09_DeployNFTFactory.s.sol
+│   │   └── 99_FullDeploy.s.sol
+│   ├── StakingPool.s.sol
+│   └── oz-validate.sh
+├── src
+│   ├── defi
+│   │   ├── MerkleAirdrop.sol
+│   │   ├── SignatureAirdrop.sol
+│   │   ├── StakingPool.sol
+│   │   └── VestingVault.sol
+│   ├── factory
+│   │   └── TokenFactory.sol
+│   ├── governance
+│   │   ├── GovernorNexvel.sol
+│   │   └── NexvelTimelockController.sol
+│   ├── marketplace
+│   │   ├── NexvelERC1155Upgradeable.sol
+│   │   ├── NexvelERC721.sol
+│   │   ├── NexvelERC721A.sol
+│   │   ├── NexvelERC721Impl.sol
+│   │   ├── NexvelLaunchpad.sol
+│   │   ├── NexvelMarketplace.sol
+│   │   ├── NexvelMarketplaceV2.sol
+│   │   ├── NexvelMarketplaceV3.sol
+│   │   ├── NexvelNFTFactory.sol
+│   │   ├── interfaces
+│   │   │   ├── IMarketplaceAddressRegistry.sol
+│   │   │   ├── INexvelERC1155.sol
+│   │   │   ├── INexvelERC721.sol
+│   │   │   └── INexvelNFTInitializable.sol
+│   │   ├── registry
+│   │   │   ├── MarketplaceAddressRegistry.sol
+│   │   │   └── RegistryConsumer.sol
+│   │   └── security
+│   │       ├── NexvelSecurityImpl.sol
+│   │       └── NexvelSecurityUpgradeable.sol
+│   ├── token
+│   │   ├── NexvelToken.sol
+│   │   └── NexvelTokenv2.sol
+│   └── treasury
+│       └── TreasuryWallet.sol
+├── structure.txt
+├── test
+│   ├── MerkleAirdropTest.t.sol
+│   ├── NexvelToken.t.sol
+│   └── SignatureAirdrop.t.sol
+└── test-backup.txt
+
+77 directories, 194 files
