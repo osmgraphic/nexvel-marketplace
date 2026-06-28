@@ -33,3 +33,10 @@ export function broadcastToUser(addr: string, event: string, data: any) {
 export function broadcastToCollection(contract: string, event: string, data: any) {
   io?.to(`collection:${contract}`).emit(event, data);
 }
+
+export function notifyUser(
+  addr: string,
+  payload: any
+) {
+  io?.to(`user:${addr}`).emit("notification", payload);
+}

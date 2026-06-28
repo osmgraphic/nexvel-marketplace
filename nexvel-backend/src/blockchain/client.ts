@@ -1,10 +1,10 @@
 import { createPublicClient, http } from "viem";
 import { sepolia } from "viem/chains";
-import { config } from "../config/config";
+import { env } from "../config/env";
 
 export const client = createPublicClient({
   chain: sepolia,
-  transport: http(config.rpcUrl),
+  transport: http(env.RPC_URL),
 });
 
 // ✅ Debug function

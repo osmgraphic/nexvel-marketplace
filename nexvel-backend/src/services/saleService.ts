@@ -1,7 +1,10 @@
 import { pool } from "../database/db";
 
 // 💰 Get all sales
-export async function getAllSales(limit = 50) {
+export async function getAllSales(
+  limit = 20,
+  offset = 0
+) {
   const { rows } = await pool.query(
     `
     SELECT
@@ -13,49 +16,66 @@ export async function getAllSales(limit = 50) {
       created_at
     FROM sales
     ORDER BY created_at DESC
-    LIMIT $1
+    LIMIT $1 OFFSET $2
     `,
-    [limit]
+    [limit, offset]
   );
+
   return rows;
 }
 
-// 📊 Get sales for NFT
-export async function getNFTSales(contract: string, tokenId: string) {
+// 📊 NFT sales
+export async function getNFTSales(
+  contract: string,
+  tokenId: string
+) {
   const { rows } = await pool.query(
     `
-    SELECT buyer, seller, price, created_at
+    SELECT
+      buyer,
+      seller,
+      price,
+      created_at
     FROM sales
-    WHERE contract_address = $1 AND token_id = $2
+    WHERE contract_address = $1
+      AND token_id = $2
     ORDER BY created_at DESC
     LIMIT 50
     `,
-    [contract, tokenId]
+    [contract.toLowerCase(), tokenId]
   );
+
   return rows;
 }
 
-// 👤 Get user purchases
-export async function getUserPurchases(address: string, limit: number, offset: number) {
-  const result = await pool.query(
+// 👤 User purchases
+export async function getUserPurchases(
+  address: string,
+  limit = 20,
+  offset = 0
+) {
+  const { rows } = await pool.query(
     `
     SELECT *
     FROM sales
-    WHERE buyer=$1
+    WHERE buyer = $1
     ORDER BY block_number DESC
     LIMIT $2 OFFSET $3
     `,
-    [address, limit, offset]
+    [address.toLowerCase(), limit, offset]
   );
 
-  return result.rows;
+  return rows;
 }
 
-// 💸 Total volume (analytics)
+// 📈 Total Volume
 export async function getTotalVolume() {
-  // if this becomes hot, move to a pre-aggregated table
   const { rows } = await pool.query(
-    `SELECT COALESCE(SUM(price), 0) AS volume FROM sales`
+    `
+    SELECT COALESCE(SUM(price),0) AS volume
+    FROM sales
+    `
   );
+
   return rows[0];
 }

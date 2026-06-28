@@ -1,30 +1,10 @@
 import { pool } from "../database/db";
 
 // 🔥 Get all active listings
-export async function getActiveListings(params: {
-  contract?: string;
-  cursorBlock?: number;   // for pagination
-  limit?: number;
-}) {
-  const { contract, cursorBlock, limit = 20 } = params;
-
-  const values: any[] = [];
-  let i = 1;
-
-  let where = `l.status = 'ACTIVE'`;
-
-  if (contract) {
-    where += ` AND l.contract_address = $${i++}`;
-    values.push(contract);
-  }
-
-  if (cursorBlock) {
-    where += ` AND l.block_number < $${i++}`;
-    values.push(cursorBlock);
-  }
-
-  values.push(limit);
-
+export async function getActiveListings(
+  limit = 20,
+  offset = 0
+) {
   const { rows } = await pool.query(
     `
     SELECT
@@ -42,11 +22,11 @@ export async function getActiveListings(params: {
     LEFT JOIN owners o
       ON o.contract_address = l.contract_address
      AND o.token_id = l.token_id
-    WHERE ${where}
+    WHERE l.status = 'ACTIVE'
     ORDER BY l.block_number DESC
-    LIMIT $${i}
+    LIMIT $1 OFFSET $2
     `,
-    values
+    [limit, offset]
   );
 
   return rows;
@@ -59,15 +39,15 @@ export async function getListing(contract: string, tokenId: string) {
     SELECT *
     FROM listings
     WHERE contract_address = $1
-    AND token_id = $2
-    AND status = 'ACTIVE'
+      AND token_id = $2
+      AND status = 'ACTIVE'
     `,
     [contract.toLowerCase(), tokenId]
-  )
+  );
 
-  return result.rows[0]
+  return result.rows[0];
 }
- 
+
 // 👤 Get user listings
 export async function getUserListings(address: string) {
   const result = await pool.query(
@@ -78,12 +58,12 @@ export async function getUserListings(address: string) {
     ORDER BY created_at DESC
     `,
     [address.toLowerCase()]
-  )
+  );
 
-  return result.rows
+  return result.rows;
 }
 
-// ❌ Cancel listing (off-chain support)
+// ❌ Cancel listing
 export async function cancelListing(
   contract: string,
   tokenId: string,
@@ -92,13 +72,14 @@ export async function cancelListing(
   await pool.query(
     `
     UPDATE listings
-    SET status = 'CANCELLED',
-        updated_at = NOW()
+    SET
+      status = 'CANCELLED',
+      updated_at = NOW()
     WHERE contract_address = $1
-    AND token_id = $2
-    AND seller = $3
-    AND status = 'ACTIVE'
+      AND token_id = $2
+      AND seller = $3
+      AND status = 'ACTIVE'
     `,
     [contract.toLowerCase(), tokenId, seller.toLowerCase()]
-  )
+  );
 }

@@ -5,9 +5,7 @@ import NexvelLaunchpadAbi from "../abi/NexvelLaunchpad";
 import NexvelMarketplaceV3Abi from "../abi/NexvelMarketplaceV3";
 import NexvelNFTFactoryAbi from "../abi/NexvelNFTFactory";
 
-import dotenv from "dotenv";
-
-  dotenv.config();
+import { env } from "./env";
 
   export type ContractConfig = {
     name: string;
@@ -18,32 +16,32 @@ import dotenv from "dotenv";
   export const CONTRACTS: ContractConfig[] = [
     {
       name: "NexvelERC721Impl",
-      address: process.env.ERC721_IMPL_ADDRESS,
+      address: env.ERC721_IMPL_ADDRESS,
       abi: NexvelERC721ImplAbi,
     },
     {
       name: "NexvelERC721A",
-      address: process.env.ERC721A_IMPL_ADDRESS,
+      address: env.ERC721A_IMPL_ADDRESS,
       abi: NexvelERC721AAbi,
     },
     {
       name: "NexvelERC1155Upgradeable",
-      address: process.env.ERC1155_ADDRESS,
+      address: env.ERC1155_ADDRESS,
       abi: NexvelERC1155UpgradeableAbi,
     },
     {
       name: "NexvelLaunchpad",
-      address: process.env.LAUNCHPAD_ADDRESS,
+      address: env.LAUNCHPAD_ADDRESS,
       abi: NexvelLaunchpadAbi,
     },
     {
       name: "NexvelMarketplaceV3",
-      address: process.env.MARKETPLACE_ADDRESS,
+      address: env.MARKETPLACE_ADDRESS,
       abi: NexvelMarketplaceV3Abi,
     },
     {
       name: "NexvelNFTFactory",
-      address: process.env.FACTORY_ADDRESS,
+      address: env.FACTORY_ADDRESS,
       abi: NexvelNFTFactoryAbi,
     },
   ];
