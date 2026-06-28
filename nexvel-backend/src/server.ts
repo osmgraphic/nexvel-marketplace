@@ -26,6 +26,7 @@ async function start() {
     console.error("❌ DB failed. Exit.");
     process.exit(1);
   }
+  
 
   server.listen(PORT, () => {
     console.log(`🔥 Server running on ${PORT}`);

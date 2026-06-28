@@ -23,12 +23,14 @@ export const env = {
 
   JWT_SECRET: required("JWT_SECRET"),
 
-  MARKETPLACE_ADDRESS: required("MARKETPLACE_ADDRESS"),
-  FACTORY_ADDRESS: required("FACTORY_ADDRESS"),
-  LAUNCHPAD_ADDRESS: required("LAUNCHPAD_ADDRESS"),
-  ERC721_IMPL_ADDRESS: required("ERC721_IMPL_ADDRESS"),
-  ERC721A_IMPL_ADDRESS: required("ERC721A_IMPL_ADDRESS"),
-  ERC1155_ADDRESS: required("ERC1155_ADDRESS"),
+REGISTRY_ADDRESS: required("REGISTRY_ADDRESS") as `0x${string}`,
+
+MARKETPLACE_ADDRESS: required("MARKETPLACE_ADDRESS") as `0x${string}`,
+FACTORY_ADDRESS: required("FACTORY_ADDRESS") as `0x${string}`,
+LAUNCHPAD_ADDRESS: required("LAUNCHPAD_ADDRESS") as `0x${string}`,
+ERC721_IMPL_ADDRESS: required("ERC721_IMPL_ADDRESS") as `0x${string}`,
+ERC721A_IMPL_ADDRESS: required("ERC721A_IMPL_ADDRESS") as `0x${string}`,
+ERC1155_ADDRESS: required("ERC1155_ADDRESS") as `0x${string}`,
 
   CHAIN_ID: Number(process.env.CHAIN_ID ?? "11155111"),
 

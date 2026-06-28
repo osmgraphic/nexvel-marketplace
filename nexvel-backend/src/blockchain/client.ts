@@ -1,17 +1,20 @@
 import { createPublicClient, http } from "viem";
-import { sepolia } from "viem/chains";
+
 import { env } from "../config/env";
+import { chain } from "../config/chains";
 
 export const client = createPublicClient({
-  chain: sepolia,
+  chain,
   transport: http(env.RPC_URL),
 });
 
-// ✅ Debug function
 export async function testRpcConnection() {
   try {
     const block = await client.getBlockNumber();
-    console.log("✅ Latest Block:", block.toString());
+
+    console.log(
+      `✅ Connected to ${client.chain.name} | Latest Block: ${block}`
+    );
   } catch (err) {
     console.error("❌ RPC Error:", err);
   }

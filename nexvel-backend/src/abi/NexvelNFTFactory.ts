@@ -203,6 +203,25 @@ export default [
   },
   {
     "type": "event",
+    "name": "ImplementationsUpdated",
+    "inputs": [
+      {
+        "name": "erc721Impl",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      },
+      {
+        "name": "erc721AImpl",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "RegistryUpdated",
     "inputs": [
       {

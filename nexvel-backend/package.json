@@ -3,11 +3,20 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "dev": "ts-node-dev src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js"
-  },
+"scripts": {
+  "dev": "ts-node-dev src/server.ts",
+  "build": "tsc",
+  "start": "node dist/server.js",
+
+  "indexer": "ts-node src/indexer/index.ts",
+  "reindex": "ts-node src/indexer/reindex.ts",
+
+  "sync:abi": "ts-node src/scripts/syncAllAbi.ts",
+
+  "typecheck": "tsc --noEmit",
+  "clean": "rm -rf dist",
+  "check": "npm run typecheck && npm run build"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",

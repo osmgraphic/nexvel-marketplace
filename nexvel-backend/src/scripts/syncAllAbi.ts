@@ -4,11 +4,13 @@ import path from "path";
 // 📍 Contracts out directory
 const CONTRACTS_OUT = path.resolve(
   __dirname,
-  "../../contracts/out"
+  "../../../contracts/out"
 );
 
-// 📍 Backend abi folder
-const DEST_DIR = path.resolve(__dirname, "../src/abi");
+const DEST_DIR = path.resolve(
+  __dirname,
+  "../abi"
+);
 
 // Ensure abi folder exists
 if (!fs.existsSync(DEST_DIR)) {
