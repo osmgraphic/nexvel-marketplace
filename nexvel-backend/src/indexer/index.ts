@@ -1,6 +1,15 @@
 import { client } from "../blockchain/client";
 import { pool } from "../database/db";
 import { routeLogs } from "./router";
+import { processBlock } from "./processor";
+import { env } from "../config/env";
+import { sleep } from "../utils/sleep";
+import { initEnvironment } from "../bootstrap/environment";
+import { initDatabase } from "../bootstrap/database";
+import { initBlockchain } from "../bootstrap/blockchain";
+import { initRegistry } from "../bootstrap/registry";
+import { initContracts } from "../bootstrap/contracts";
+import { initInterfaces } from "../bootstrap/interfaces";
 
 import {
   initIndexerState,
@@ -12,72 +21,9 @@ import {
 } from "../blockchain/blocks";
 
 // ===============================
-const CONFIRMATIONS = 5;
+const CONFIRMATIONS = env.INDEXER_CONFIRMATIONS;
 // ===============================
 
-async function processBlock(blockNumber: number) {
-  const dbClient = await pool.connect(); // 🔥 reuse per block
-
-  try {
-    const block = await client.getBlock({
-      blockNumber: BigInt(blockNumber),
-    });
-
-    if (!block) return;
-
-    const bn = Number(block.number);
-
-    // ===============================
-    // ⚠️ REORG DETECTION
-    // ===============================
-    const reorg = await isReorg(bn, block.hash);
-
-    if (reorg) {
-      await rollbackFromBlock(bn);
-      return;
-    }
-
-    // ===============================
-    // 📦 COLLECT LOGS
-    // ===============================
-    const logs: any[] = [];
-
-    for (const txHash of block.transactions) {
-      const receipt = await client.getTransactionReceipt({
-        hash: txHash,
-      });
-
-      if (receipt?.logs?.length) {
-        logs.push(...receipt.logs);
-      }
-    }
-
-    if (logs.length === 0) {
-      await saveBlock(bn, block.hash, block.parentHash);
-      await updateLastProcessedBlock(bn);
-      return;
-    }
-
-    // ===============================
-    // 🚦 ROUTE EVENTS
-    // ===============================
-    await routeLogs(logs, dbClient);
-
-    // ===============================
-    // 💾 SAVE CHECKPOINT
-    // ===============================
-    await saveBlock(bn, block.hash, block.parentHash);
-    await updateLastProcessedBlock(bn);
-
-    console.log(`✅ Block processed: ${bn}`);
-
-  } catch (err) {
-    console.error(`❌ Error processing block ${blockNumber}:`, err);
-    throw err;
-  } finally {
-    dbClient.release(); // 🔥 VERY IMPORTANT
-  }
-}
 
 // ===============================
 // 🚀 MAIN LOOP
@@ -85,6 +31,13 @@ async function processBlock(blockNumber: number) {
 
 async function main() {
   console.log("🚀 Nexvel Indexer Started");
+
+  await initEnvironment();
+  await initDatabase();
+  await initBlockchain();
+  await initRegistry();
+  await initContracts();
+  await initInterfaces();
 
   await initIndexerState();
 
@@ -98,13 +51,33 @@ async function main() {
       const safeBlock = latestNumber - CONFIRMATIONS;
 
       if (currentBlock >= safeBlock) {
-        await new Promise((res) => setTimeout(res, 2000));
+        await sleep(env.INDEXER_POLL_INTERVAL);
         continue;
       }
 
       while (currentBlock < safeBlock) {
         currentBlock++;
+      
+        // Process logs
         await processBlock(currentBlock);
+      
+        // Fetch block for checkpoint
+        const block = await client.getBlock({
+          blockNumber: BigInt(currentBlock),
+        });
+      
+        // Save block history
+        await saveBlock(
+          currentBlock,
+          block.hash,
+          block.parentHash
+        );
+      
+        // Save progress
+        await updateLastProcessedBlock(currentBlock);
+      
+        // Prevent RPC rate limiting
+        await sleep(100);
       }
 
     } catch (err) {

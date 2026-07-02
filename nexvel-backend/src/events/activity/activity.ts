@@ -1,10 +1,13 @@
-import { pool } from "../../database/db.js";
+import { pool } from "../../database/db";
 import { PoolClient } from "pg";
+import {
+  normalizeAddress,
+  normalizePrice,
+  normalizeTokenId,
+} from "../normalize";
 
 // 🔧 helpers
-function normalize(addr?: string | null) {
-  return addr ? addr.toLowerCase() : null;
-}
+
 
 export async function storeActivity(
   eventType: string,
@@ -25,17 +28,12 @@ export async function storeActivity(
   }
 
   // 🔥 normalize inputs
-  const contractAddr = normalize(contract);
-  const fromAddr = normalize(from);
-  const toAddr = normalize(to);
+const contractAddr = normalizeAddress(contract);
+const fromAddr = normalizeAddress(from);
+const toAddr = normalizeAddress(to);
 
-  const tokenIdStr = tokenId !== null && tokenId !== undefined
-    ? tokenId.toString()
-    : null;
-
-  const priceStr = price !== null && price !== undefined
-    ? price.toString()
-    : null;
+const tokenIdStr = normalizeTokenId(tokenId);
+const priceStr = normalizePrice(price);
 
   // 🔥 choose client
   const dbClient = client ?? (await pool.connect());

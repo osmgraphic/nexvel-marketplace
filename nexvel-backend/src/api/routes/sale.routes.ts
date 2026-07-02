@@ -8,16 +8,12 @@ import {
 
 const router = express.Router()
 
-// 💰 All sales
-router.get("/", fetchSales)
+router.get("/", fetchSales);
 
-// 📊 NFT sales
-router.get("/:contract/:tokenId", fetchNFTSales)
+router.get("/volume", fetchVolume);
 
-// 👤 User purchases
-router.get("/user/:address", fetchUserPurchases)
+router.get("/user/:address", fetchUserPurchases);
 
-// 📈 Total volume
-router.get("/volume", fetchVolume)
+router.get("/:contract/:tokenId", fetchNFTSales);
 
 export default router

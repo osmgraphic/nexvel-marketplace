@@ -2,7 +2,7 @@ import { PoolClient } from "pg";
 import { storeActivity } from "../activity/activity";
 import { redis } from "../../utils/redis";
 import { createNotification } from "../../api/notifications/notification.service";
-import { notifyUser } from "../../utils/socket";
+import { notifyUser } from "../../socket/broadcaster";
 import { eventBus } from "../../utils/eventBus";
 
 // 🔧 helper

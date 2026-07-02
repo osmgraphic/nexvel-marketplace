@@ -1,5 +1,8 @@
 import { registry } from "./client";
-import type { RegistryAddresses, RegistryMetadata } from "./types";
+import type {
+  RegistryAddresses,
+  RegistryMetadata,
+} from "./types";
 
 let cachedAddresses: RegistryAddresses | null = null;
 let cachedMetadata: RegistryMetadata | null = null;
@@ -9,33 +12,29 @@ export async function loadRegistry(): Promise<RegistryAddresses> {
     return cachedAddresses;
   }
 
-const metadata = (await registry.read.metadata()) as [
-  string,
-  bigint,
-  bigint,
-  boolean
-];
+  const metadata = (await registry.read.metadata()) as [
+    string,
+    bigint,
+    bigint,
+    boolean
+  ];
 
-  if (!metadata[3]) {
-    throw new Error("Registry is not initialized.");
-  }
+  const addresses = (await registry.read.allAddresses()) as [
+    `0x${string}`,
+    `0x${string}`,
+    `0x${string}`,
+    `0x${string}`,
+    `0x${string}`
+  ];
 
-const addresses = (await registry.read.allAddresses()) as [
-  `0x${string}`,
-  `0x${string}`,
-  `0x${string}`,
-  `0x${string}`,
-  `0x${string}`
-];
-
-  cachedMetadata = {
+  const registryMetadata: RegistryMetadata = {
     protocol: metadata[0],
-    version: metadata[1],
-    chainId: metadata[2],
+    version: Number(metadata[1]),
+    chainId: Number(metadata[2]),
     initialized: metadata[3],
   };
 
-  cachedAddresses = {
+  const registryAddresses: RegistryAddresses = {
     security: addresses[0],
     marketplace: addresses[1],
     launchpad: addresses[2],
@@ -43,16 +42,24 @@ const addresses = (await registry.read.allAddresses()) as [
     nftFactory: addresses[4],
   };
 
+  cachedMetadata = registryMetadata;
+  cachedAddresses = registryAddresses;
+
   console.log("====================================");
   console.log("📦 Registry Loaded");
-  console.log(`Protocol : ${cachedMetadata.protocol}`);
-  console.log(`Version  : ${cachedMetadata.version}`);
-  console.log(`Chain ID : ${cachedMetadata.chainId}`);
+  console.log(`Protocol     : ${registryMetadata.protocol}`);
+  console.log(`Version      : ${registryMetadata.version}`);
+  console.log(`Chain ID     : ${registryMetadata.chainId}`);
+  console.log(`Initialized  : ${registryMetadata.initialized}`);
   console.log("====================================");
 
-  console.table(cachedAddresses);
+  console.table(registryAddresses);
 
-  return cachedAddresses;
+  if (!registryMetadata.initialized) {
+    console.warn("⚠️ Registry is not fully initialized.");
+  }
+
+  return registryAddresses;
 }
 
 export function getRegistryAddresses(): RegistryAddresses {

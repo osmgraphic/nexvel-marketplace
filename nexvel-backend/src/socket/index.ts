@@ -1,9 +1,11 @@
 import { Server } from "socket.io";
-import { broadcastToUser } from "../utils/socket";
+import { Server as HttpServer } from "http";
 
-let io: Server;
+import { rooms } from "./rooms";
 
-export function initSocket(server: any) {
+let io: Server | null = null;
+
+export function initSocket(server: HttpServer) {
   io = new Server(server, {
     cors: {
       origin: "*",
@@ -11,17 +13,27 @@ export function initSocket(server: any) {
   });
 
   io.on("connection", (socket) => {
-    console.log("🔌 Client connected:", socket.id);
-
-    // 👤 Join user room
-    socket.on("joinUser", (address: string) => {
-      socket.join(`user:${address.toLowerCase()}`);
-    });
-
-    // 📦 Join collection room
-    socket.on("joinCollection", (contract: string) => {
-      socket.join(`collection:${contract.toLowerCase()}`);
-    });
+      console.log("🔌 Client connected:", socket.id);
+  
+      socket.on("joinUser", (address: string) => {
+    if (typeof address !== "string") return;
+  
+    socket.join(rooms.user(address));
+  });
+  
+  socket.on("joinCollection", (contract: string) => {
+    if (typeof contract !== "string") return;
+  
+    socket.join(rooms.collection(contract));
+  });
+  
+  socket.on("joinMarketplace", () => {
+    socket.join(rooms.marketplace());
+  });
+  
+  socket.on("joinLaunchpad", () => {
+    socket.join(rooms.launchpad());
+  });
 
     socket.on("disconnect", () => {
       console.log("❌ Client disconnected:", socket.id);
@@ -29,7 +41,6 @@ export function initSocket(server: any) {
   });
 }
 
-export function getIO() {
-  if (!io) throw new Error("Socket not initialized");
+export function getIO(): Server | null {
   return io;
 }

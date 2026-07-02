@@ -1,15 +1,16 @@
 import { eventBus } from "../../utils/eventBus";
+
 import {
   invalidateNFT,
   invalidateUser,
-  invalidateListings
+  invalidateListings,
 } from "../../utils/cacheInvalidation";
 
 import {
   broadcast,
   broadcastToCollection,
-  broadcastToUser
-} from "../../utils/socket";
+  broadcastToUser,
+} from "../../socket/broadcaster";
 
 // 🔥 LISTING CREATED
 eventBus.on("listing:created", async (data) => {

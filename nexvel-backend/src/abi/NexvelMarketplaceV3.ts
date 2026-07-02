@@ -2300,9 +2300,27 @@ export default [
         "internalType": "uint256"
       },
       {
-        "name": "buyer",
+        "name": "nft",
         "type": "address",
         "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "tokenId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "seller",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      },
+      {
+        "name": "buyer",
+        "type": "address",
+        "indexed": false,
         "internalType": "address"
       },
       {
@@ -2316,6 +2334,12 @@ export default [
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
+      },
+      {
+        "name": "paymentToken",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
       }
     ],
     "anonymous": false

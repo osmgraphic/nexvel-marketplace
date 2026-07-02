@@ -1,35 +1,45 @@
-import { client as blockchainClient } from "../blockchain/client"; // ✅ rename
+import { client as blockchainClient } from "../blockchain/client";
 import { pool } from "../database/db";
 import { routeLogs } from "./router";
-import { CONTRACTS } from "../config/Contracts.Config";
-import { isAddress } from "ethers";
 
-const CONTRACT_ADDRESSES = CONTRACTS
-  .map((c) => c.address)
-  .filter((addr): addr is `0x${string}` => {
-    return typeof addr === "string" && addr.startsWith("0x") && isAddress(addr);
-  });
+import { getContracts } from "../contracts/discovery";
 
 export async function processBlock(blockNumber: number) {
-  console.log(`📦 Processing block ${blockNumber}`);
+  console.debug(`📦 Processing block ${blockNumber}`);
 
-  const dbClient = await pool.connect(); // ✅ DB client
+  const dbClient = await pool.connect();
 
   try {
-    // ✅ blockchain client used here
+    const contracts = getContracts();
+
+    const addresses = [
+      contracts.marketplace,
+      contracts.launchpad,
+      contracts.erc1155,
+      contracts.nftFactory,
+      contracts.security,
+    ].filter(
+      (addr) =>
+        addr !== "0x0000000000000000000000000000000000000000"
+    );
+
+    if (addresses.length === 0) {
+      return;
+    }
+
     const logs = await blockchainClient.getLogs({
       fromBlock: BigInt(blockNumber),
       toBlock: BigInt(blockNumber),
-      address: CONTRACT_ADDRESSES,
+      address: addresses,
     });
 
-    if (logs.length === 0) return;
+    if (logs.length === 0) {
+      return;
+    }
 
-    // ✅ pass DB client forward
     await routeLogs(logs, dbClient);
-
   } catch (err) {
-    console.error("❌ Error processing block:", blockNumber, err);
+    console.error(`❌ Error processing block ${blockNumber}`, err);
     throw err;
   } finally {
     dbClient.release();

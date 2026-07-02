@@ -1,15 +1,14 @@
-import { storeActivity } from "../activity/activity";
-import { PoolClient } from "pg";
 import { eventBus } from "../../utils/eventBus";
-import type { EventMeta } from "../types";
+import { storeActivity } from "../activity/activity";
 import {
   normalizeAddress,
   normalizePrice,
   normalizeTokenId,
 } from "../normalize";
+
 import type { EventContext } from "../types";
 
-type ListingCreatedArgs = {
+type Listed1155Args = {
   listingId: bigint;
   nft: string;
   tokenId: bigint;
@@ -19,8 +18,8 @@ type ListingCreatedArgs = {
   paymentToken: string;
 };
 
-export async function handleListingCreated(
-  ctx: EventContext<ListingCreatedArgs>
+export async function handleListed1155(
+  ctx: EventContext<Listed1155Args>
 ) {
   const { args, meta, client } = ctx;
 
@@ -43,6 +42,7 @@ export async function handleListingCreated(
       ON CONFLICT (contract_address, token_id)
       DO UPDATE
       SET
+        seller = EXCLUDED.seller,
         price = EXCLUDED.price,
         status = 'ACTIVE'
     `,
@@ -72,5 +72,7 @@ export async function handleListingCreated(
     tokenId,
     seller,
     price,
+    quantity: args.quantity.toString(),
+    listingId: args.listingId.toString(),
   });
 }

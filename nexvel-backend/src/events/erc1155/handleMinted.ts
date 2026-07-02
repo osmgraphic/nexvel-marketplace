@@ -2,7 +2,7 @@ import { storeActivity } from "../activity/activity";
 import { redis } from "../../utils/redis";
 import { PoolClient } from "pg";
 import { createNotification } from "../../api/notifications/notification.service";
-import { notifyUser } from "../../utils/socket";
+import { notifyUser } from "../../socket/broadcaster";
 
 const ZERO = "0x0000000000000000000000000000000000000000";
 

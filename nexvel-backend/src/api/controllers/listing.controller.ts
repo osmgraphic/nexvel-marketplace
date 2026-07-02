@@ -5,6 +5,11 @@ import {
   cancelListing
 } from "../../services/listingService";
 
+import {
+  invalidateListings,
+  invalidateNFT,
+} from "../../utils/cacheInvalidation";
+
 import { nftSchema, addressSchema } from "../utils/validation";
 import { redis } from "../../utils/redis";
 
@@ -68,7 +73,7 @@ export async function fetchUserListings(req: any, res: any) {
       return res.status(400).json({ error: "Invalid address" });
     }
 
-    const address = parsed.data;
+    const address = parsed.data.toLowerCase();
 
     const data = await getUserListings(address);
 
@@ -97,11 +102,8 @@ export async function cancelListingController(req: any, res: any) {
 
     await cancelListing(contract, tokenId, seller);
 
-    // 🔥 invalidate cache
-    const pipe = redis.pipeline();
-    pipe.del("listings:active");
-    pipe.del(`listing:${contract}:${tokenId}`);
-    await pipe.exec();
+    await invalidateListings();
+    await invalidateNFT(contract, tokenId.toString());
 
     res.json({ message: "Listing cancelled" });
 

@@ -1,7 +1,7 @@
 import { decodeLog } from "../utils/decode";
 
 // Marketplace
-import { handleListingCreated } from "../events/marketplace/handleListingCreated";
+import { handleListed1155 } from "../events/marketplace/handleListed1155";
 import { handleListingCancelled } from "../events/marketplace/handleListingCancelled";
 import { handleSale } from "../events/marketplace/handleSale";
 import { handlePriceUpdated } from "../events/marketplace/handlePriceUpdated";
@@ -29,10 +29,10 @@ import { handleERC1155TransferSingle } from "../events/erc1155/handleTransferSin
 import { handleTransferBatch } from "../events/erc1155/handleTransferBatch";
 
 const HANDLERS: Record<string, Function> = {
-  ListingCreated: handleListingCreated,
+  Listed1155: handleListed1155,
   ListingCancelled: handleListingCancelled,
   PriceUpdated: handlePriceUpdated,
-  Purchased: handleSale,
+  Purchased1155: handleSale,
   BidPlaced: handleBidPlaced,
   AuctionCreated: handleAuctionCreated,
   AuctionSettled: handleAuctionSettled,
@@ -66,12 +66,16 @@ export async function routeLogs(logs: any[], dbClient: any) {
       if (!handler) continue;
 
       jobs.push(
-        handler(decoded.args, {
-          transactionHash: log.transactionHash,
-          blockNumber: Number(log.blockNumber),
-          logIndex: log.logIndex,
-          address: log.address,
-        }, dbClient) // ✅ pass db client
+        handler({
+          args: decoded.args,
+          meta: {
+            transactionHash: log.transactionHash,
+            blockNumber: Number(log.blockNumber),
+            logIndex: log.logIndex,
+            address: log.address,
+          },
+          client: dbClient,
+        })
       );
 
     } catch (err) {

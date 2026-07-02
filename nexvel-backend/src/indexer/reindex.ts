@@ -27,4 +27,11 @@ async function reindex(fromBlock: number, toBlock?: number) {
 }
 
 // 👉 Change start block if needed
-reindex(0).catch(console.error);
+const START_BLOCK = Number(process.argv[2]);
+
+if (Number.isNaN(START_BLOCK)) {
+  console.error("Usage: npm run reindex -- <startBlock>");
+  process.exit(1);
+}
+
+reindex(START_BLOCK).catch(console.error);
