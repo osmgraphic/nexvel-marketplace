@@ -80,6 +80,11 @@ abstract contract NexvelERC721 is
         string newURI
     );
 
+    event LaunchpadMint(
+    address indexed to,
+    uint256 amount
+);
+
     /*//////////////////////////////////////////////////////////////
                         LAZY MINT STRUCT
     //////////////////////////////////////////////////////////////*/
@@ -245,19 +250,25 @@ abstract contract NexvelERC721 is
         uint96 royaltyBps
     ) external onlyLaunchpad {
         require(royaltyBps <= MAX_ROYALTY_BPS, "Royalty too high");
-        require(maxSupply_ > 0, "Invalid supply");
+        require(maxSupply > 0, "Invalid supply");
         _checkSupply(amount);
 
         for (uint256 i = 0; i < amount; i++) {
             uint256 tokenId = nextTokenId++;
+
             _safeMint(to, tokenId);
+
             _setTokenURI(tokenId, uri);
 
             if (royaltyBps > 0) {
-                _royalties[tokenId] = RoyaltyInfo({receiver: royaltyReceiver, royaltyBps: royaltyBps});
+                _royalties[tokenId] = RoyaltyInfo({
+                    receiver: royaltyReceiver,
+                    royaltyBps: royaltyBps
+                });
             }
         }
-        event LaunchpadMint(address indexed to, uint256 amount);
+
+        emit LaunchpadMint(to, amount);
     }
 
     /*//////////////////////////////////////////////////////////////

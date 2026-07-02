@@ -12,7 +12,7 @@ import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.s
 /*//////////////////////////////////////////////////////////////
                         REGISTRY
 //////////////////////////////////////////////////////////////*/
-import {MarketplaceAddressRegistry} from "../../src/marketplace/registry/MarketplaceAddressRegistry.sol";
+import {IRegistry} from "../../src/marketplace/registry/IRegistry.sol";
 
 /*//////////////////////////////////////////////////////////////
                         LAUNCHPAD
@@ -26,13 +26,13 @@ contract DeployLaunchpad is Script {
         address admin = vm.envAddress("ADMIN_ADDRESS");
         address operator = vm.envAddress("OPERATOR_ADDRESS");
         address registryAddr = vm.envAddress("REGISTRY_ADDRESS");
-        address launchpadFeeRecipient = vm.envAddress("LAUNCHPAD_FEE_RECEIVER");
+        address launchpadFeeRecipient = vm.envAddress("LAUNCHPAD_FEE_RECIPIENT");
         uint96 launchpadFeeBps = uint96(vm.envUint("LAUNCHPAD_FEE_BPS"));
 
         require(registryAddr != address(0), "Registry zero");
         require(launchpadFeeBps <= 1000, "Launchpad fee too high");
 
-        MarketplaceAddressRegistry registry = MarketplaceAddressRegistry(registryAddr);
+        IRegistry registry = IRegistry(registryAddr);
 
         /*//////////////////////////////////////////////////////////////
                             CREATORS (FROM .env)
@@ -74,9 +74,12 @@ contract DeployLaunchpad is Script {
         /*//////////////////////////////////////////////////////////////
                             LOGS
         //////////////////////////////////////////////////////////////*/
-        console2.log("=== LAUNCHPAD DEPLOYED (UUPS) ===");
-        console2.log("Launchpad Proxy :", launchpadProxy);
-        console2.log("Launchpad Impl  :", address(impl));
-        console2.log("Registry        :", registryAddr);
+        console2.log("======================================");
+        console2.log("NEXVEL LAUNCHPAD DEPLOYED");
+        console2.log("======================================");
+        console2.log("Proxy         :", launchpadProxy);
+        console2.log("Implementation:", address(impl));
+        console2.log("Registry      :", registryAddr);
+        console2.log("Registered    : YES");
     }
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.30;
 
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
@@ -17,7 +17,7 @@ import {NexvelERC1155Upgradeable} from "../../src/marketplace/NexvelERC1155Upgra
 /*//////////////////////////////////////////////////////////////
                         REGISTRY
 //////////////////////////////////////////////////////////////*/
-import {MarketplaceAddressRegistry} from "../../src/marketplace/registry/MarketplaceAddressRegistry.sol";
+import {IRegistry} from "../../src/marketplace/registry/IRegistry.sol";
 
 contract DeployERC1155 is Script {
     function run() external returns (address erc1155Proxy) {
@@ -31,7 +31,7 @@ contract DeployERC1155 is Script {
         require(operator != address(0), "Operator zero");
         require(registryAddr != address(0), "Registry zero");
 
-        MarketplaceAddressRegistry registry = MarketplaceAddressRegistry(registryAddr);
+        IRegistry registry = IRegistry(registryAddr);
 
         /*//////////////////////////////////////////////////////////////
                                CREATORS (FROM.env)
@@ -79,9 +79,12 @@ contract DeployERC1155 is Script {
         /*//////////////////////////////////////////////////////////////
                             LOGS
         //////////////////////////////////////////////////////////////*/
-        console2.log("=== ERC1155 DEPLOYED (UUPS SAFE) ===");
-        console2.log("ERC1155 Proxy :", erc1155Proxy);
-        console2.log("ERC1155 Impl  :", address(impl));
-        console2.log("Registry      :", registryAddr);
-    }
+        console2.log("======================================");
+          console2.log("NEXVEL ERC1155 DEPLOYED");
+          console2.log("======================================");
+          console2.log("Proxy         :", erc1155Proxy);
+          console2.log("Implementation:", address(impl));
+          console2.log("Registry      :", registryAddr);
+          console2.log("Registered    : YES");
+        }
 }

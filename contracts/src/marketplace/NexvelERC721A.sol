@@ -56,6 +56,10 @@ contract NexvelERC721A is Initializable, ERC721AUpgradeable, IERC2981, NexvelSec
         uint96 royaltyBps
     );
 
+    event MetadataUpdated(
+    string newBaseURI
+);
+
     /*//////////////////////////////////////////////////////////////
                             INITIALIZER
     //////////////////////////////////////////////////////////////*/
@@ -81,12 +85,17 @@ contract NexvelERC721A is Initializable, ERC721AUpgradeable, IERC2981, NexvelSec
                             ADMIN
     //////////////////////////////////////////////////////////////*/
 
-    function setBaseURI(string calldata uri) external onlyAdmin {
-        require(bytes(uri).length > 0, "Empty URI");
-        baseTokenURI = uri;
-        emit BaseURIUpdated(uri);
-        event MetadataUpdated(string newBaseURI);
-    }
+function setBaseURI(string calldata uri)
+    external
+    onlyAdmin
+{
+    require(bytes(uri).length > 0, "Empty URI");
+
+    baseTokenURI = uri;
+
+    emit BaseURIUpdated(uri);
+    emit MetadataUpdated(uri);
+}
 
     function _baseURI() internal view override returns (string memory) {
         return baseTokenURI;
@@ -104,7 +113,7 @@ contract NexvelERC721A is Initializable, ERC721AUpgradeable, IERC2981, NexvelSec
         require(bytes(baseTokenURI).length > 0, "Base URI not set");
         require(quantity > 0, "Zero quantity");
         require(royaltyBps <= MAX_ROYALTY_BPS, "Royalty too high");
-        require(maxSupply_ > 0, "Invalid supply");
+        require(maxSupply > 0, "Invalid supply");
         
         _checkSupply(quantity);
 

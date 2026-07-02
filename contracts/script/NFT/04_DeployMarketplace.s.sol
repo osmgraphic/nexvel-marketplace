@@ -12,7 +12,7 @@ import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.s
 /*//////////////////////////////////////////////////////////////
                         REGISTRY
 //////////////////////////////////////////////////////////////*/
-import {MarketplaceAddressRegistry} from "../../src/marketplace/registry/MarketplaceAddressRegistry.sol";
+import {IRegistry} from "../../src/marketplace/registry/IRegistry.sol";
 
 /*//////////////////////////////////////////////////////////////
                         MARKETPLACE
@@ -30,7 +30,7 @@ contract DeployMarketplace is Script {
         uint96 marketplaceFeeBps = uint96(vm.envUint("MARKETPLACE_FEE_BPS"));
         uint256 maxTradeValue_ = vm.envUint("MAX_TRADE_VALUE");
 
-        MarketplaceAddressRegistry registry = MarketplaceAddressRegistry(registryAddr);
+        IRegistry registry = IRegistry(registryAddr);
 
         /*//////////////////////////////////////////////////////////////
                             CREATORS (FROM .env)

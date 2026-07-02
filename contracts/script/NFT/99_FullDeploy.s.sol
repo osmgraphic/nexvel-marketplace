@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.30;
 
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
@@ -7,14 +7,14 @@ import {console2} from "forge-std/console2.sol";
 import {ERC1967Proxy} 
     from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
-import {MarketplaceAddressRegistry} 
-    from "../../src/marketplace/registry/MarketplaceAddressRegistry.sol";
+import {MarketplaceAddressRegistry}
+from "../../src/marketplace/registry/MarketplaceAddressRegistry.sol";
+
+import {IRegistry}
+from "../../src/marketplace/registry/IRegistry.sol";
 
 import {NexvelSecurityImpl} 
     from "../../src/marketplace/security/NexvelSecurityImpl.sol";
-
-import {NexvelMarketplace} 
-    from "../../src/marketplace/NexvelMarketplace.sol";
 
 import {NexvelMarketplaceV3} 
     from "../../src/marketplace/NexvelMarketplaceV3.sol";
@@ -42,7 +42,7 @@ contract FullDeploy is Script {
 
         address admin        = vm.envAddress("ADMIN_ADDRESS");
         address operator     = vm.envAddress("OPERATOR_ADDRESS");
-        address marketplacFeeRecipient = vm.envAddress("MARKETPLACE_FEE_RECIPIENT");
+        address marketplaceFeeRecipient = vm.envAddress("MARKETPLACE_FEE_RECIPIENT");
         uint96 marketplaceFeeBps = uint96(vm.envUint("MARKETPLACE_FEE_BPS"));
         address launchpadFeeRecipient = vm.envAddress("LAUNCHPAD_FEE_RECIPIENT");
         uint96 launchpadFeeBps = uint96(vm.envUint("LAUNCHPAD_FEE_BPS"));
@@ -66,8 +66,10 @@ contract FullDeploy is Script {
         /*//////////////////////////////////////////////////////////////
                             REGISTRY
         //////////////////////////////////////////////////////////////*/
-        MarketplaceAddressRegistry registry =
-            new MarketplaceAddressRegistry(admin);
+        MarketplaceAddressRegistry deployedRegistry =
+          new MarketplaceAddressRegistry(admin);
+
+        IRegistry registry = IRegistry(address(deployedRegistry));
 
         /*//////////////////////////////////////////////////////////////
                             SECURITY (UUPS)
@@ -75,14 +77,14 @@ contract FullDeploy is Script {
         NexvelSecurityImpl securityImpl =
             new NexvelSecurityImpl();
 
-        address SECURITY = address(
+        address security = address(
             new ERC1967Proxy(
                 address(securityImpl),
                 abi.encodeWithSelector(
                     NexvelSecurityImpl.initialize.selector,
                     admin,
                     operator,
-                    address(registry),
+                    address(deployedRegistry),
                     creators
                 )
             )
@@ -94,16 +96,20 @@ contract FullDeploy is Script {
         NexvelMarketplaceV3 marketplaceImpl =
             new NexvelMarketplaceV3();
 
-        address MARKETPLACE = address(
+        address marketplace = address(
             new ERC1967Proxy(
                 address(marketplaceImpl),
                 abi.encodeWithSelector(
-                    NexvelMarketplace.initialize.selector,
+                    bytes4(
+                        keccak256(
+                            "initialize(address,address,address,address[],address,uint96,uint256)"
+                        )
+                    ),
                     admin,
                     operator,
-                    address(registry),
+                    address(deployedRegistry),
                     creators,
-                    marketplacFeeRecipient,
+                    marketplaceFeeRecipient,
                     marketplaceFeeBps,
                     maxTradeValue
                 )
@@ -116,14 +122,14 @@ contract FullDeploy is Script {
         NexvelLaunchpad launchpadImpl =
             new NexvelLaunchpad();
 
-        address LAUNCHPAD = address(
+        address launchpad = address(
             new ERC1967Proxy(
                 address(launchpadImpl),
                 abi.encodeWithSelector(
                     NexvelLaunchpad.initialize.selector,
                     admin,
                     operator,
-                    address(registry),
+                    address(deployedRegistry),
                     creators,
                     launchpadFeeRecipient,
                     launchpadFeeBps
@@ -137,13 +143,13 @@ contract FullDeploy is Script {
         NexvelERC1155Upgradeable erc1155Impl =
             new NexvelERC1155Upgradeable();
 
-        address ERC1155 = address(
+        address erc1155 = address(
             new ERC1967Proxy(
                 address(erc1155Impl),
                 abi.encodeWithSelector(
                     NexvelERC1155Upgradeable.initialize.selector,
                     "ipfs://",
-                    address(registry),
+                    address(deployedRegistry),
                     admin,
                     operator,
                     creators
@@ -157,7 +163,7 @@ contract FullDeploy is Script {
         NexvelERC721Impl erc721Impl =
             new NexvelERC721Impl();
 
-        address ERC721_IMPL = address(erc721Impl);
+        address erc721ImplAddr = address(erc721Impl);
 
         /*//////////////////////////////////////////////////////////////
                     ERC721A IMPLEMENTATION (CLONE TEMPLATE)
@@ -165,39 +171,67 @@ contract FullDeploy is Script {
         NexvelERC721A erc721AImpl =
             new NexvelERC721A();
 
-        address ERC721A_IMPL = address(erc721AImpl);
+        address erc721AImplAddr = address(erc721AImpl);
 
         /*//////////////////////////////////////////////////////////////
                             FACTORY
         //////////////////////////////////////////////////////////////*/
-        address FACTORY = address(
+        address factory = address(
             new NexvelNFTFactory(
                 admin,
-                address(registry),
-                ERC721_IMPL,
-                ERC721A_IMPL
+                address(deployedRegistry),
+                erc721ImplAddr,
+                erc721AImplAddr
             )
         );
 
         /*//////////////////////////////////////////////////////////////
                             WIRING
         //////////////////////////////////////////////////////////////*/
-        registry.setSecurity(SECURITY);
-        registry.setMarketplace(MARKETPLACE);
-        registry.setLaunchpad(LAUNCHPAD);
-        registry.setERC1155(ERC1155);
-        registry.setNFTFactory(FACTORY);
+        registry.setSecurity(security);
+        registry.setMarketplace(marketplace);
+        registry.setLaunchpad(launchpad);
+        registry.setERC1155(erc1155);
+        registry.setNFTFactory(factory);
+
+        require(
+            deployedRegistry.isInitialized(),
+            "Registry not initialized"
+        );
 
         vm.stopBroadcast();
 
-        console2.log("====== NEXVEL FULL DEPLOY (DIRECT V3) ======");
-        console2.log("Registry      :", address(registry));
-        console2.log("Security      :", SECURITY);
-        console2.log("Marketplace   :", MARKETPLACE);
-        console2.log("Launchpad     :", LAUNCHPAD);
-        console2.log("ERC1155       :", ERC1155);
-        console2.log("ERC721 Impl   :", ERC721_IMPL);
-        console2.log("ERC721A Impl  :", ERC721A_IMPL);
-        console2.log("Factory       :", FACTORY);
+        console2.log("");
+
+        console2.log("========================================");
+        
+        console2.log("NEXVEL FULL DEPLOY SUCCESS");
+        
+        console2.log("========================================");
+        console2.log(
+          "Registry      :",address(deployedRegistry)
+        );
+        console2.log("Security      :", security);
+        console2.log("Marketplace   :", marketplace);
+        console2.log("Launchpad     :", launchpad);
+        console2.log("ERC1155       :", erc1155);
+        console2.log("ERC721 Impl   :", erc721ImplAddr);
+        console2.log("ERC721A Impl  :", erc721AImplAddr);
+        console2.log("Factory       :", factory);
+
+        console2.log("");
+
+        console2.log(
+          "Registry Initialized :",
+          deployedRegistry.isInitialized()
+        );
+        
+        console2.log(
+          "Protocol             : Nexvel Marketplace"
+        );
+        
+        console2.log(
+          "Version              : 1"
+        );
     }
 }

@@ -127,11 +127,12 @@ contract NexvelNFTFactory is ReentrancyGuard {
         require(maxSupply_ > 0, "Invalid max supply");
         require(creators_.length > 0, "No creators");
         require(operator_ != address(0), "Invalid operator");
-        require(bytes(name_).length > 0, "Empty name");
-        require(bytes(symbol_).length > 0, "Empty symbol");
-        require(erc721Impl_ != erc721AImpl_, "Same impl");
+        require(bytes(name_).length <= 64, "Empty name");
+        require(bytes(symbol_).length <= 12, "Empty symbol");
+        require(erc721Impl != erc721AImpl, "Same implementation");
 
         collection = Clones.clone(implementation);
+        require(collection != address(0), "Clone failed");
 
         INexvelNFTInitializable(collection).initialize(
             name_,

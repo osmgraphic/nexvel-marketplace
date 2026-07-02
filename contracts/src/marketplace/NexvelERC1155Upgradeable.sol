@@ -67,6 +67,10 @@ contract NexvelERC1155Upgradeable is
     );
 
     event CreatorSet(uint256 tokenId, address creator);
+    event URISet(
+    uint256 indexed tokenId,
+    string uri
+);
 
     /*//////////////////////////////////////////////////////////////
                             INITIALIZER
@@ -115,10 +119,14 @@ contract NexvelERC1155Upgradeable is
         return _tokenURIs[tokenId];
     }
 
-    function _setTokenURI(uint256 tokenId, string memory newUri) internal {
-        _tokenURIs[tokenId] = newUri;
-        event URISet(uint256 tokenId, string uri);
-    }
+    function _setTokenURI(
+    uint256 tokenId,
+    string memory newUri
+) internal {
+    _tokenURIs[tokenId] = newUri;
+
+    emit URISet(tokenId, newUri);
+}
 
     /*//////////////////////////////////////////////////////////////
                         TOKEN CREATION
@@ -146,7 +154,7 @@ contract NexvelERC1155Upgradeable is
         }
 
         emit TokenCreated(tokenId, maxSupply_, uri_, royaltyReceiver_, royaltyBps_);
-        emit CreatorSet(tokenId, creator);
+        emit CreatorSet(tokenId, msg.sender);
     }
 
     /*//////////////////////////////////////////////////////////////

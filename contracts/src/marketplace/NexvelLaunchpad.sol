@@ -538,7 +538,7 @@ contract NexvelLaunchpad is Initializable, EIP712Upgradeable, UUPSUpgradeable, N
         userPurchased[saleId][msg.sender] = 0;
 
         if (sale.tokenType == TokenType.ERC1155) {
-            _erc1155().mintLaunchpad(msg.sender, sale.tokenId, amount, sale.uri, sale.creator);
+            _erc1155().mintLaunchpad(msg.sender, sale.tokenId, amount, sale.uri);
         } else {
             INexvelERC721(sale.nft)
                 .mintBatch721Launchpad(msg.sender, amount, sale.uri, sale.royaltyReceiver, sale.royaltyBps);

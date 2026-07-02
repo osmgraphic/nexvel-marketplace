@@ -7,8 +7,7 @@ import {console2} from "forge-std/console2.sol";
 import {NexvelNFTFactory} 
     from "../../src/marketplace/NexvelNFTFactory.sol";
 
-import {MarketplaceAddressRegistry} 
-    from "../../src/marketplace/registry/MarketplaceAddressRegistry.sol";
+import {IRegistry} from "../../src/marketplace/registry/IRegistry.sol";
 
 contract DeployNFTFactory is Script {
 
@@ -26,8 +25,7 @@ contract DeployNFTFactory is Script {
         require(erc721Impl.code.length > 0, "ERC721 impl not contract");
         require(erc721AImpl.code.length > 0, "ERC721A impl not contract");
 
-        MarketplaceAddressRegistry registry =
-            MarketplaceAddressRegistry(registryAddr);
+        IRegistry registry = IRegistry(registryAddr);
 
         vm.startBroadcast(deployerKey);
 

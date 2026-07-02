@@ -16,6 +16,7 @@ import {IMarketplaceAddressRegistry} from "./interfaces/IMarketplaceAddressRegis
 import {NexvelSecurityUpgradeable} from "./security/NexvelSecurityUpgradeable.sol";
 import {NexvelERC721} from "./NexvelERC721.sol";
 import {INexvelERC721} from "./interfaces/INexvelERC721.sol";
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 contract NexvelMarketplace is
     Initializable,
@@ -149,8 +150,11 @@ contract NexvelMarketplace is
         onlyRole(ADMIN_ROLE)
     {
         require(nft != address(0), "Zero address");
-        require(IERC165(nft).supportsInterface(type(IERC721).interfaceId), "Not ERC721");
-
+        require(
+            IERC165(nft).supportsInterface(type(IERC721).interfaceId) ||
+            IERC165(nft).supportsInterface(type(IERC1155).interfaceId),
+            "Unsupported NFT"
+        );
         allowedCollections[nft] = allowed;
         emit CollectionUpdated(nft, allowed);
     }

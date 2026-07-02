@@ -71,9 +71,13 @@ contract NexvelMarketplaceV3 is NexvelMarketplaceV2, IERC1155Receiver {
 
     event Purchased1155(
         uint256 indexed listingId,
-        address indexed buyer,
+        address indexed nft,
+        uint256 indexed tokenId,
+        address seller,
+        address buyer,
         uint256 quantity,
-        uint256 totalPrice
+        uint256 totalPrice,
+        address paymentToken
     );
 
     event AuctionCreated1155(
@@ -192,30 +196,39 @@ contract NexvelMarketplaceV3 is NexvelMarketplaceV2, IERC1155Receiver {
         uint256 totalPrice = listing.pricePerUnit * qty;
         require(totalPrice <= maxTradeValue, "Trade limit exceeded");
         require(msg.value == totalPrice, "Wrong price");
+
+    _handlePayment(
+        listing.nft,
+        listing.tokenId,
+        listing.seller,
+        msg.sender,
+        totalPrice
+    );
     
-        listing.quantity -= qty;
-        if (listing.quantity == 0) {
-            delete listings1155[listingId];
-        }
+    IERC1155(listing.nft).safeTransferFrom(
+        address(this),
+        msg.sender,
+        listing.tokenId,
+        qty,
+        ""
+    );
     
-        _handlePayment(
-            listing.nft,
-            listing.tokenId,
-            listing.seller,
-            msg.sender,      // ✅ CORRECT BUYER
-            totalPrice
-        );
-    
-        IERC1155(listing.nft).safeTransferFrom(
-            address(this),
-            msg.sender,
-            listing.tokenId,
-            qty,
-            ""
-        );
-    
-        emit Purchased1155(listingId, msg.sender, qty, totalPrice);
+    emit Purchased1155(
+        listingId,
+        listing.nft,
+        listing.tokenId,
+        listing.seller,
+        msg.sender,
+        qty,
+        totalPrice,
+        listing.paymentToken
+    );
+
+    listing.quantity -= qty;
+    if (listing.quantity == 0) {
+        delete listings1155[listingId];
     }
+}
 
 
     /*//////////////////////////////////////////////////////////////
