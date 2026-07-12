@@ -309,7 +309,6 @@ contract NexvelMarketplaceV3 is NexvelMarketplaceV2, IERC1155Receiver {
         require(minPrice > 0, "Invalid min price");
         require(minPrice <= maxTradeValue, "Price too high");
         require(duration >= 10 minutes, "Duration too short");
-        require(duration <= MAX_AUCTION_DURATION, "Duration too long");
 
         IERC1155(nft).safeTransferFrom(
             msg.sender,
@@ -319,7 +318,7 @@ contract NexvelMarketplaceV3 is NexvelMarketplaceV2, IERC1155Receiver {
             ""
         );
 
-        uint256 auctionId = ++nextAuction1155Id;
+        uint256 auctionId = nextAuction1155Id++;
 
         auctions1155[auctionId] = Auction1155({
             seller: msg.sender,
@@ -361,7 +360,7 @@ contract NexvelMarketplaceV3 is NexvelMarketplaceV2, IERC1155Receiver {
             ? a.minPrice
             : (a.highestBid * (10_000 + MIN_BID_INCREMENT_BPS)) / 10_000;
     
-        require(msg.value >= minBid, "Bid too low");
+        require(msg.value > minBid, "Bid too low");
     
         if (a.highestBidder != address(0)) {
             pendingRefunds[a.highestBidder] += a.highestBid;

@@ -54,7 +54,6 @@ contract NexvelMarketplaceV2 is NexvelMarketplace, IERC721Receiver {
     uint256 public constant MIN_BID_INCREMENT_BPS = 250; // 2.5%
     uint256 public constant EXTENSION_WINDOW = 10 minutes;
     uint256 public constant EXTENSION_DURATION = 10 minutes;
-    uint256 public constant MAX_AUCTION_DURATION = 30 days;
 
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
@@ -91,13 +90,6 @@ contract NexvelMarketplaceV2 is NexvelMarketplace, IERC721Receiver {
         uint256 indexed tokenId
     );
 
-    event EmergencyAuctionCancelled(
-        uint256 indexed auctionId,
-        address indexed nft,
-        uint256 indexed tokenId,
-        address seller
-    );
-
     /*//////////////////////////////////////////////////////////////
                         CREATE AUCTION
     //////////////////////////////////////////////////////////////*/
@@ -115,36 +107,17 @@ contract NexvelMarketplaceV2 is NexvelMarketplace, IERC721Receiver {
     {
         require(minPrice > 0, "Min price zero");
         require(duration >= 1 hours, "Duration too short");
-        require(duration <= MAX_AUCTION_DURATION, "Duration too long");
         require(allowedCollections[nft], "Collection not allowed");
-        
         _requireERC721(nft);
-        
-        require(
-            auctions[nft][tokenId].endTime == 0,
-            "Auction exists"
-        );
-        
-        IERC721 token = IERC721(nft);
-        
-        require(
-            token.ownerOf(tokenId) == msg.sender,
-            "Not owner"
-        );
-        
-        require(
-            token.getApproved(tokenId) == address(this) ||
-            token.isApprovedForAll(msg.sender, address(this)),
-            "Marketplace not approved"
-        );
-        
-        token.transferFrom(msg.sender, address(this), tokenId);
+        require(auctions[nft][tokenId].endTime == 0, "Auction exists");
+
+        IERC721(nft).transferFrom(msg.sender, address(this), tokenId);
 
         uint256 endTime = block.timestamp + duration;
 
-        uint256 auctionId = ++nextAuctionId;
-        
-        Auction memory newAuction = Auction({
+        uint256 auctionId = nextAuctionId++;
+
+        auctionsById[auctionId] = Auction({
             id: auctionId,
             seller: msg.sender,
             minPrice: minPrice,
@@ -153,17 +126,15 @@ contract NexvelMarketplaceV2 is NexvelMarketplace, IERC721Receiver {
             endTime: endTime
         });
         
-        auctionsById[auctionId] = newAuction;
-        auctions[nft][tokenId] = newAuction;
         auctionIdByNFT[nft][tokenId] = auctionId;
 
         emit AuctionCreated(
             auctionId,
             nft,
             tokenId,
-            msg.sender,
-            minPrice,
-            endTime
+            auctionsById[auctionId].seller,
+            uint256(auctionsById[auctionId].minPrice),
+            uint256(auctionsById[auctionId].endTime)
         );
     }
 
@@ -189,7 +160,7 @@ contract NexvelMarketplaceV2 is NexvelMarketplace, IERC721Receiver {
             ? auction.minPrice
             : (auction.highestBid * (10_000 + MIN_BID_INCREMENT_BPS)) / 10_000;
     
-        require(msg.value >= minBid, "Bid too low");
+        require(msg.value > minBid, "Bid too low");
     
         if (auction.highestBidder != address(0)) {
             pendingRefunds[auction.highestBidder] += auction.highestBid;
@@ -217,13 +188,11 @@ contract NexvelMarketplaceV2 is NexvelMarketplace, IERC721Receiver {
         whenGlobalNotPaused
     {
         Auction memory auction = auctions[nft][tokenId];
-        
+    
         require(auction.endTime != 0, "Auction missing");
         require(block.timestamp >= auction.endTime, "Auction not ended");
-        
+    
         delete auctions[nft][tokenId];
-        delete auctionsById[auction.id];
-        delete auctionIdByNFT[nft][tokenId];
     
         if (auction.highestBidder == address(0)) {
             IERC721(nft).safeTransferFrom(
@@ -273,8 +242,6 @@ contract NexvelMarketplaceV2 is NexvelMarketplace, IERC721Receiver {
         require(auction.highestBid == 0, "Already bid");
 
         delete auctions[nft][tokenId];
-        delete auctionsById[auction.id];
-        delete auctionIdByNFT[nft][tokenId];
 
         IERC721(nft).safeTransferFrom(
             address(this),
@@ -283,37 +250,6 @@ contract NexvelMarketplaceV2 is NexvelMarketplace, IERC721Receiver {
         );
 
         emit AuctionCancelled(nft, tokenId);
-    }
-    
-
-    function emergencyCancelAuction(
-        address nft,
-        uint256 tokenId
-    )
-        external
-        onlyAdmin
-        nonReentrant
-    {
-        Auction memory auction = auctions[nft][tokenId];
-    
-        require(auction.endTime != 0, "Auction missing");
-    
-        delete auctions[nft][tokenId];
-        delete auctionsById[auction.id];
-        delete auctionIdByNFT[nft][tokenId];
-    
-        IERC721(nft).safeTransferFrom(
-            address(this),
-            auction.seller,
-            tokenId
-        );
-    
-        emit EmergencyAuctionCancelled(
-            auction.id,
-            nft,
-            tokenId,
-            auction.seller
-        );
     }
 
     /*//////////////////////////////////////////////////////////////
