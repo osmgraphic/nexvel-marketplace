@@ -6,10 +6,10 @@ pragma solidity ^0.8.24;
 //-----------------------------------------------------
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {NexvelSecurityUpgradeable} from "../security/NexvelSecurityUpgradeable.sol";
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
-contract StakingPool is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
+contract StakingPool is Initializable, OwnableUpgradeable, NexvelSecurityUpgradeable {
     //---------------------------------------
     // CONSTANTS & PARAMETERS
     //---------------------------------------
@@ -61,7 +61,6 @@ contract StakingPool is Initializable, OwnableUpgradeable, ReentrancyGuardUpgrad
         require(_nxv != address(0), "Invalid NXV");
 
         __Ownable_init(msg.sender);
-        __ReentrancyGuard_init();
 
         nxv = ERC20Upgradeable(_nxv);
 

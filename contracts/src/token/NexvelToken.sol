@@ -174,7 +174,7 @@ contract NexvelToken is
         return uint48(block.number);
     }
 
-    function CLOCK_MODE() public pure override returns (string memory) {
+    function clockMode() public pure returns (string memory) {
         return "mode=blocknumber";
     }
 }

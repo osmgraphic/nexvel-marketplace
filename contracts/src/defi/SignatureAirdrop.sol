@@ -75,7 +75,7 @@ contract SignatureAirdrop is EIP712, AccessControl, ReentrancyGuard {
         require(!usedNonce[user][roundId][nonce], "nonce used");
         require(r.claimed + amount <= r.maxTotal, "round cap exceeded");
 
-        bytes32 structHash = keccak256(abi.encode(CLAIM_TYPEHASH, user, amount, nonce, expiry, roundId, r.token));
+        bytes32 structHash = keccak256(abi.encodePacked(CLAIM_TYPEHASH, user, amount, nonce, expiry, roundId, r.token));
 
         bytes32 digest = _hashTypedDataV4(structHash);
         address recovered = ECDSA.recover(digest, signature);
@@ -97,7 +97,7 @@ contract SignatureAirdrop is EIP712, AccessControl, ReentrancyGuard {
     {
         Round memory r = rounds[roundId];
         require(r.exists, "round not exist");
-        bytes32 structHash = keccak256(abi.encode(CLAIM_TYPEHASH, user, amount, nonce, expiry, roundId, r.token));
+        bytes32 structHash = keccak256(abi.encodePacked(CLAIM_TYPEHASH, user, amount, nonce, expiry, roundId, r.token));
         return _hashTypedDataV4(structHash);
     }
 }

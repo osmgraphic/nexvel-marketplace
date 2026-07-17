@@ -7,10 +7,9 @@ pragma solidity ^0.8.24;
 
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-
 import {IMarketplaceAddressRegistry} from "./interfaces/IMarketplaceAddressRegistry.sol";
 import {INexvelNFTInitializable} from "./interfaces/INexvelNFTInitializable.sol";
-import {NexvelSecurityUpgradeable} from "./security/NexvelSecurityUpgradeable.sol";
+import {NexvelSecurityUpgradeable} from "../security/NexvelSecurityUpgradeable.sol";
 
 /*//////////////////////////////////////////////////////////////
                         CONTRACT
@@ -30,7 +29,7 @@ contract NexvelNFTFactory is ReentrancyGuard {
                                 STORAGE
     //////////////////////////////////////////////////////////////*/
 
-    address public immutable admin;
+    address public immutable ADMIN;
     IMarketplaceAddressRegistry public registry;
 
     address public erc721Impl;
@@ -61,22 +60,28 @@ contract NexvelNFTFactory is ReentrancyGuard {
     /*//////////////////////////////////////////////////////////////
                                 MODIFIERS
     //////////////////////////////////////////////////////////////*/
-
     modifier onlyAdmin() {
-        require(msg.sender == admin, "Not admin");
+        _onlyAdmin();
         _;
     }
 
+    function _onlyAdmin() internal view {
+        require(msg.sender == ADMIN, "Not admin");
+    }
+
     modifier onlyCreator() {
+        _onlyCreator();
+        _;
+    }
+
+    function _onlyCreator() internal view {
         address securityAddr = registry.security();
         require(securityAddr != address(0), "Security not set");
-
         require(
             NexvelSecurityUpgradeable(securityAddr)
                 .hasRole(NexvelSecurityUpgradeable(securityAddr).CREATOR_ROLE(), msg.sender),
             "Not creator"
         );
-        _;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -89,7 +94,7 @@ contract NexvelNFTFactory is ReentrancyGuard {
         require(erc721Impl_ != address(0), "ERC721 impl zero");
         require(erc721AImpl_ != address(0), "ERC721A impl zero");
 
-        admin = admin_;
+        ADMIN = admin_;
         registry = IMarketplaceAddressRegistry(registry_);
         erc721Impl = erc721Impl_;
         erc721AImpl = erc721AImpl_;
@@ -99,7 +104,7 @@ contract NexvelNFTFactory is ReentrancyGuard {
                             NFT CREATION
     //////////////////////////////////////////////////////////////*/
 
-    function createNFT(
+    function createNft(
         string calldata name_,
         string calldata symbol_,
         NFTType nftType,
@@ -121,7 +126,7 @@ contract NexvelNFTFactory is ReentrancyGuard {
         require(collection != address(0), "Clone failed");
 
         INexvelNFTInitializable(collection)
-            .initialize(name_, symbol_, admin, address(registry), operator_, creators_, maxSupply_);
+            .initialize(name_, symbol_, ADMIN, address(registry), operator_, creators_, maxSupply_);
 
         emit CollectionCreated(msg.sender, collection, implementation, nftType, name_, symbol_, maxSupply_);
     }

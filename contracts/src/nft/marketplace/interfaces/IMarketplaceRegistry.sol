@@ -72,5 +72,5 @@ interface IMarketplaceRegistry {
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Returns the registry version.
-    function version() external pure returns (uint256);
+    function version() external view returns (uint256);
 }

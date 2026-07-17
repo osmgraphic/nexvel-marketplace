@@ -8,7 +8,7 @@ contract NexvelSecurityImpl is NexvelSecurityUpgradeable {
         external
         initializer
     {
-        __NexvelSecurity_init(admin_, operator_, registry_, creators_);
+        _nexvelSecurityInit(admin_, operator_, registry_, creators_);
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor

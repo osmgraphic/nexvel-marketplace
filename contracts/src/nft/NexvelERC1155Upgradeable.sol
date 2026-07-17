@@ -17,7 +17,7 @@ import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/crypt
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 import {IMarketplaceAddressRegistry} from "./interfaces/IMarketplaceAddressRegistry.sol";
-import {NexvelSecurityUpgradeable} from "./security/NexvelSecurityUpgradeable.sol";
+import {NexvelSecurityUpgradeable} from "../security/NexvelSecurityUpgradeable.sol";
 
 /*//////////////////////////////////////////////////////////////
                     NEXVEL ERC1155 (REGISTRY)
@@ -46,7 +46,7 @@ contract NexvelERC1155Upgradeable is
     uint256 internal _nextTokenId;
 
     mapping(uint256 => uint256) internal maxSupply;
-    mapping(uint256 => string) internal _tokenURIs;
+    mapping(uint256 => string) internal _tokenUrIs;
     mapping(uint256 => bool) internal _tokenExists;
 
     mapping(address => uint256) public nonces;
@@ -82,12 +82,11 @@ contract NexvelERC1155Upgradeable is
         __ERC1155_init(baseURI);
         __ERC1155Supply_init();
         __ERC2981_init();
-        __UUPSUpgradeable_init();
         __EIP712_init("NexvelERC1155", "1");
 
         registry = IMarketplaceAddressRegistry(registry_);
 
-        __NexvelSecurity_init(admin_, operator_, registry_, creators_);
+        _nexvelSecurityInit(admin_, operator_, registry_, creators_);
 
         _nextTokenId = 1;
     }
@@ -109,11 +108,11 @@ contract NexvelERC1155Upgradeable is
 
     function uri(uint256 tokenId) public view override returns (string memory) {
         require(_tokenExists[tokenId], "URI nonexistent");
-        return _tokenURIs[tokenId];
+        return _tokenUrIs[tokenId];
     }
 
-    function _setTokenURI(uint256 tokenId, string memory newUri) internal {
-        _tokenURIs[tokenId] = newUri;
+    function _setTokenUri(uint256 tokenId, string memory newUri) internal {
+        _tokenUrIs[tokenId] = newUri;
 
         emit URISet(tokenId, newUri);
     }
@@ -135,7 +134,7 @@ contract NexvelERC1155Upgradeable is
         _tokenExists[tokenId] = true;
         maxSupply[tokenId] = maxSupply_;
 
-        _setTokenURI(tokenId, uri_);
+        _setTokenUri(tokenId, uri_);
         creatorOf[tokenId] = msg.sender;
 
         if (royaltyReceiver_ != address(0) && royaltyBps_ > 0) {
@@ -168,7 +167,7 @@ contract NexvelERC1155Upgradeable is
                         LAUNCHPAD MINT
     //////////////////////////////////////////////////////////////*/
 
-    function mintLaunchpad(address to, uint256 tokenId, uint256 amount, string calldata uri_, address creator)
+    function mintLaunchpad(address to, uint256 tokenId, uint256 amount, string calldata uri_)
         external
         onlyLaunchpad
         whenNotPaused
@@ -183,7 +182,7 @@ contract NexvelERC1155Upgradeable is
             require(bytes(uri_).length > 0, "Empty URI"); // 🔥 IMPORTANT
             _tokenExists[tokenId] = true;
             maxSupply[tokenId] = type(uint256).max;
-            _setTokenURI(tokenId, uri_);
+            _setTokenUri(tokenId, uri_);
 
             emit TokenCreated(tokenId, maxSupply[tokenId], uri_, address(0), 0);
         }
@@ -259,7 +258,7 @@ contract NexvelERC1155Upgradeable is
         if (!_tokenExists[voucher.tokenId]) {
             _tokenExists[voucher.tokenId] = true;
             maxSupply[voucher.tokenId] = voucher.supply;
-            _setTokenURI(voucher.tokenId, voucher.uri);
+            _setTokenUri(voucher.tokenId, voucher.uri);
         }
 
         _mint(to, voucher.tokenId, amount, "");

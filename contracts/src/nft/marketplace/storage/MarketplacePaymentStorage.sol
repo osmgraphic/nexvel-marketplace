@@ -27,5 +27,5 @@ abstract contract MarketplacePaymentStorage {
                             STORAGE GAP
     //////////////////////////////////////////////////////////////*/
 
-    uint256[50] private __gap;
+    uint256[50] private _gap;
 }

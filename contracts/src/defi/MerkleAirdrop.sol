@@ -27,7 +27,7 @@ contract MerkleAirdrop {
         require(amount > 0, "Zero amount");
         require(!claimed[msg.sender], "Already claimed");
 
-        bytes32 leaf = keccak256(abi.encodePacked(msg.sender, amount));
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(msg.sender, amount))));
 
         require(MerkleProof.verify(proof, MERKLE_ROOT, leaf), "Invalid proof");
 

@@ -4,7 +4,6 @@ pragma solidity ^0.8.24;
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-import {MarketplaceTypes} from "../types/MarketplaceTypes.sol";
 import {MarketplaceErrors} from "../errors/MarketplaceErrors.sol";
 
 /// @title RoyaltyLib

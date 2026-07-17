@@ -2,7 +2,6 @@
 pragma solidity ^0.8.24;
 
 import {MarketplaceTypes} from "../types/MarketplaceTypes.sol";
-import {MarketplaceConfigStorage} from "../config/MarketplaceConfigStorage.sol";
 
 /// @title Marketplace1155Storage
 /// @author Nexvel
@@ -53,5 +52,5 @@ abstract contract Marketplace1155Storage {
                             STORAGE GAP
     //////////////////////////////////////////////////////////////*/
 
-    uint256[50] private __gap;
+    uint256[50] private _gap;
 }

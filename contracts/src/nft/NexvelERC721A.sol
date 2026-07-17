@@ -6,7 +6,7 @@ import {ERC721AUpgradeable} from "lib/erc721a-upgradeable/contracts/ERC721AUpgra
 import {IERC2981} from "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-import {NexvelSecurityUpgradeable} from "./security/NexvelSecurityUpgradeable.sol";
+import {NexvelSecurityUpgradeable} from "../security/NexvelSecurityUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 /**
@@ -70,7 +70,7 @@ contract NexvelERC721A is Initializable, ERC721AUpgradeable, IERC2981, NexvelSec
         require(admin_ != address(0), "Admin zero");
 
         __ERC721A_init(name_, symbol_);
-        __NexvelSecurity_init(admin_, operator_, registry_, creators_);
+        _nexvelSecurityInit(admin_, operator_, registry_, creators_);
 
         maxSupply = maxSupply_;
     }

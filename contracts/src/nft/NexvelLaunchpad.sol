@@ -16,8 +16,7 @@ import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProo
 import {NexvelNFTFactory} from "./NexvelNFTFactory.sol";
 import {INexvelERC1155} from "./interfaces/INexvelERC1155.sol";
 import {INexvelERC721} from "./interfaces/INexvelERC721.sol";
-import {NexvelSecurityUpgradeable} from "./security/NexvelSecurityUpgradeable.sol";
-import {NexvelERC721A} from "./NexvelERC721A.sol";
+import {NexvelSecurityUpgradeable} from "../security/NexvelSecurityUpgradeable.sol";
 import {IMarketplaceAddressRegistry} from "./interfaces/IMarketplaceAddressRegistry.sol";
 
 /*//////////////////////////////////////////////////////////////
@@ -185,8 +184,7 @@ contract NexvelLaunchpad is Initializable, EIP712Upgradeable, UUPSUpgradeable, N
         registry = IMarketplaceAddressRegistry(registry_);
 
         __EIP712_init("NexvelLaunchpad", "1");
-        __UUPSUpgradeable_init();
-        __NexvelSecurity_init(admin_, operator_, registry_, creators_);
+        _nexvelSecurityInit(admin_, operator_, registry_, creators_);
 
         launchpadFeeRecipient = launchpadFeeRecipient_;
         launchpadFeeBps = launchpadFeeBps_;
@@ -569,8 +567,8 @@ contract NexvelLaunchpad is Initializable, EIP712Upgradeable, UUPSUpgradeable, N
 
         if (sale.paymentToken == address(0)) {
             require(address(this).balance >= sale.totalRaised, "Insufficient ETH");
-            _safeTransferETH(launchpadFeeRecipient, fee);
-            _safeTransferETH(sale.creator, creatorAmount);
+            _safeTransferEth(launchpadFeeRecipient, fee);
+            _safeTransferEth(sale.creator, creatorAmount);
         } else {
             require(IERC20(sale.paymentToken).balanceOf(address(this)) >= sale.totalRaised, "Insufficient token");
             IERC20 token = IERC20(sale.paymentToken);
@@ -596,7 +594,7 @@ contract NexvelLaunchpad is Initializable, EIP712Upgradeable, UUPSUpgradeable, N
         userPaid[saleId][msg.sender] = 0;
 
         if (sale.paymentToken == address(0)) {
-            _safeTransferETH(msg.sender, amount);
+            _safeTransferEth(msg.sender, amount);
         } else {
             IERC20(sale.paymentToken).safeTransfer(msg.sender, amount);
         }
@@ -673,7 +671,7 @@ contract NexvelLaunchpad is Initializable, EIP712Upgradeable, UUPSUpgradeable, N
         saleId = ++saleCount;
 
         // Deploy NFT contract via factory
-        address nft = factory.createNFT(name_, symbol_, nftType, operator_, creators_, maxSupply_);
+        address nft = factory.createNft(name_, symbol_, nftType, operator_, creators_, maxSupply_);
 
         emit NFTDeployed(saleId, nft);
 
@@ -727,7 +725,7 @@ contract NexvelLaunchpad is Initializable, EIP712Upgradeable, UUPSUpgradeable, N
                             SAFE ETH
     //////////////////////////////////////////////////////////////*/
 
-    function _safeTransferETH(address to, uint256 amount) internal {
+    function _safeTransferEth(address to, uint256 amount) internal {
         (bool ok,) = to.call{value: amount}("");
         require(ok, "ETH transfer failed");
     }
@@ -740,7 +738,7 @@ contract NexvelLaunchpad is Initializable, EIP712Upgradeable, UUPSUpgradeable, N
         require(to != address(0), "Invalid recipient");
 
         if (token == address(0)) {
-            _safeTransferETH(to, amount);
+            _safeTransferEth(to, amount);
         } else {
             IERC20(token).safeTransfer(to, amount);
         }
@@ -765,5 +763,5 @@ contract NexvelLaunchpad is Initializable, EIP712Upgradeable, UUPSUpgradeable, N
                         STORAGE GAP
     //////////////////////////////////////////////////////////////*/
 
-    uint256[50] private __gap;
+    uint256[50] private _gap;
 }

@@ -20,6 +20,7 @@ contract NexvelTimelockController is Initializable, TimelockControllerUpgradeabl
     /// @notice public initializer wrapper (calls OZ internal init)
     function initialize(uint256 minDelay, address[] memory proposers, address[] memory executors, address admin)
         public
+        override
         initializer
     {
         // Call OZ internal initializer
@@ -27,7 +28,6 @@ contract NexvelTimelockController is Initializable, TimelockControllerUpgradeabl
 
         // Init access control & UUPS
         __AccessControl_init();
-        __UUPSUpgradeable_init();
 
         // grant upgrader to admin
         _grantRole(UPGRADER_ROLE, admin);

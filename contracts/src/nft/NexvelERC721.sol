@@ -13,7 +13,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {INexvelERC721} from "./interfaces/INexvelERC721.sol";
 
-import {NexvelSecurityUpgradeable} from "./security/NexvelSecurityUpgradeable.sol";
+import {NexvelSecurityUpgradeable} from "../security/NexvelSecurityUpgradeable.sol";
 
 /**
  * @title NexvelERC721
@@ -117,7 +117,7 @@ abstract contract NexvelERC721 is
         __ERC721_init(name_, symbol_);
         __ERC721URIStorage_init();
         __EIP712_init("NexvelNFT", "1");
-        __NexvelSecurity_init(admin_, operator_, registry_, creators_);
+        _nexvelSecurityInit(admin_, operator_, registry_, creators_);
 
         _grantRole(CREATOR_ROLE, admin_);
 

@@ -103,7 +103,7 @@ library PaymentLib {
     /// @notice Transfers native ETH.
     /// @param recipient Recipient.
     /// @param amount Amount.
-    function transferETH(address recipient, uint256 amount) internal {
+    function transferEth(address recipient, uint256 amount) internal {
         if (amount == 0) return;
 
         (bool success,) = payable(recipient).call{value: amount}("");
@@ -122,7 +122,7 @@ library PaymentLib {
     /// @param from Sender.
     /// @param to Recipient.
     /// @param amount Amount.
-    function transferERC20(address token, address from, address to, uint256 amount) internal {
+    function transferErc20(address token, address from, address to, uint256 amount) internal {
         if (amount == 0) return;
 
         IERC20(token).safeTransferFrom(from, to, amount);
@@ -152,9 +152,9 @@ library PaymentLib {
         MarketplaceTypes.FeeBreakdown memory breakdown
     ) internal {
         if (isNativeToken(paymentToken)) {
-            _distributeETH(treasury, seller, breakdown);
+            _distributeEth(treasury, seller, breakdown);
         } else {
-            _distributeERC20(paymentToken, payer, treasury, seller, breakdown);
+            _distributeErc20(paymentToken, payer, treasury, seller, breakdown);
         }
     }
 
@@ -190,7 +190,7 @@ library PaymentLib {
         if (amount == 0) return;
 
         if (isNativeToken(paymentToken)) {
-            transferETH(bidder, amount);
+            transferEth(bidder, amount);
         } else {
             IERC20(paymentToken).safeTransfer(bidder, amount);
         }
@@ -200,17 +200,17 @@ library PaymentLib {
                     INTERNAL ETH PAYOUT
     //////////////////////////////////////////////////////////////*/
 
-    function _distributeETH(address treasury, address seller, MarketplaceTypes.FeeBreakdown memory breakdown) private {
+    function _distributeEth(address treasury, address seller, MarketplaceTypes.FeeBreakdown memory breakdown) private {
         if (breakdown.marketplaceFee != 0) {
-            transferETH(treasury, breakdown.marketplaceFee);
+            transferEth(treasury, breakdown.marketplaceFee);
         }
 
         if (breakdown.royaltyAmount != 0 && breakdown.royaltyReceiver != address(0)) {
-            transferETH(breakdown.royaltyReceiver, breakdown.royaltyAmount);
+            transferEth(breakdown.royaltyReceiver, breakdown.royaltyAmount);
         }
 
         if (breakdown.sellerAmount != 0) {
-            transferETH(seller, breakdown.sellerAmount);
+            transferEth(seller, breakdown.sellerAmount);
         }
     }
 
@@ -218,7 +218,7 @@ library PaymentLib {
                     INTERNAL ERC20 PAYOUT
     //////////////////////////////////////////////////////////////*/
 
-    function _distributeERC20(
+    function _distributeErc20(
         address paymentToken,
         address payer,
         address treasury,
@@ -226,15 +226,15 @@ library PaymentLib {
         MarketplaceTypes.FeeBreakdown memory breakdown
     ) private {
         if (breakdown.marketplaceFee != 0) {
-            transferERC20(paymentToken, payer, treasury, breakdown.marketplaceFee);
+            transferErc20(paymentToken, payer, treasury, breakdown.marketplaceFee);
         }
 
         if (breakdown.royaltyAmount != 0 && breakdown.royaltyReceiver != address(0)) {
-            transferERC20(paymentToken, payer, breakdown.royaltyReceiver, breakdown.royaltyAmount);
+            transferErc20(paymentToken, payer, breakdown.royaltyReceiver, breakdown.royaltyAmount);
         }
 
         if (breakdown.sellerAmount != 0) {
-            transferERC20(paymentToken, payer, seller, breakdown.sellerAmount);
+            transferErc20(paymentToken, payer, seller, breakdown.sellerAmount);
         }
     }
 
@@ -308,9 +308,9 @@ library PaymentLib {
         MarketplaceTypes.FeeBreakdown memory breakdown
     ) internal {
         if (isNativeToken(paymentToken)) {
-            _settleEscrowedETH(treasury, seller, breakdown);
+            _settleEscrowedEth(treasury, seller, breakdown);
         } else {
-            _settleEscrowedERC20(paymentToken, treasury, seller, breakdown);
+            _settleEscrowedErc20(paymentToken, treasury, seller, breakdown);
         }
     }
 
@@ -318,19 +318,19 @@ library PaymentLib {
                     INTERNAL ESCROW ETH
     //////////////////////////////////////////////////////////////*/
 
-    function _settleEscrowedETH(address treasury, address seller, MarketplaceTypes.FeeBreakdown memory breakdown)
+    function _settleEscrowedEth(address treasury, address seller, MarketplaceTypes.FeeBreakdown memory breakdown)
         private
     {
         if (breakdown.marketplaceFee != 0) {
-            transferETH(treasury, breakdown.marketplaceFee);
+            transferEth(treasury, breakdown.marketplaceFee);
         }
 
         if (breakdown.royaltyAmount != 0 && breakdown.royaltyReceiver != address(0)) {
-            transferETH(breakdown.royaltyReceiver, breakdown.royaltyAmount);
+            transferEth(breakdown.royaltyReceiver, breakdown.royaltyAmount);
         }
 
         if (breakdown.sellerAmount != 0) {
-            transferETH(seller, breakdown.sellerAmount);
+            transferEth(seller, breakdown.sellerAmount);
         }
     }
 
@@ -338,7 +338,7 @@ library PaymentLib {
                 INTERNAL ESCROW ERC20
     //////////////////////////////////////////////////////////////*/
 
-    function _settleEscrowedERC20(
+    function _settleEscrowedErc20(
         address paymentToken,
         address treasury,
         address seller,

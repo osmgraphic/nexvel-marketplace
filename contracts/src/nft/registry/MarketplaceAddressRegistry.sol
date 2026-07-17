@@ -123,7 +123,7 @@ contract MarketplaceAddressRegistry is Ownable {
         erc1155 = addr;
     }
 
-    function setNFTFactory(address addr) external onlyRegistryOwner {
+    function setNftFactory(address addr) external onlyRegistryOwner {
         require(addr != address(0), "Zero address");
         require(addr.code.length > 0, "Not contract");
         require(addr != nftFactory, "Already set");

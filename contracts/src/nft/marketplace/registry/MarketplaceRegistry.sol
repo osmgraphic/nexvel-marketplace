@@ -110,7 +110,6 @@ abstract contract MarketplaceRegistry is
         }
 
         __AccessControl_init();
-        __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(REGISTRY_ADMIN_ROLE, admin);
@@ -165,7 +164,7 @@ abstract contract MarketplaceRegistry is
                             STORAGE GAP
     //////////////////////////////////////////////////////////////*/
 
-    uint256[50] private __gap;
+    uint256[50] private _gap;
 
     /*//////////////////////////////////////////////////////////////
                             MODULE REGISTRY
@@ -287,7 +286,7 @@ abstract contract MarketplaceRegistry is
     }
 
     /// @notice Returns the current storage version.
-    function Version() external view returns (uint64) {
+    function version() external view returns (uint256) {
         return _version;
     }
 

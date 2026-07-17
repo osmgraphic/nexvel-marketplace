@@ -10,5 +10,5 @@ interface IRegistry {
 
     function setERC1155(address erc1155) external;
 
-    function setNFTFactory(address nftFactory) external;
+    function setNftFactory(address nftFactory) external;
 }

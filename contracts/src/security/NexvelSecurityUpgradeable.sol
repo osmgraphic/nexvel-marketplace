@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import {Initializable} from "@openzeppelin-contracts/contracts/proxy/utils/Initializable.sol";
-import {AccessControlUpgradeable} from "@openzeppelin-contracts/contracts/access/AccessControlUpgradeable.sol";
-import {PausableUpgradeable} from "@openzeppelin-contracts/contracts/security/PausableUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin-contracts/contracts/utils/ReentrancyGuardUpgradeable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {IMarketplaceAddressRegistry} from "../nft/interfaces/IMarketplaceAddressRegistry.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -29,7 +29,7 @@ abstract contract NexvelSecurityUpgradeable is
     Initializable,
     AccessControlUpgradeable,
     PausableUpgradeable,
-    ReentrancyGuardUpgradeable
+    ReentrancyGuard
 {
     using SafeERC20 for IERC20;
 
@@ -86,7 +86,7 @@ abstract contract NexvelSecurityUpgradeable is
      * @param operator_    Trusted operator for system operations
      * @param creators_    Initial creator whitelist
      */
-    function __NexvelSecurity_init(address admin_, address operator_, address registry_, address[] calldata creators_)
+    function _nexvelSecurityInit(address admin_, address operator_, address registry_, address[] calldata creators_)
         internal
         onlyInitializing
     {
@@ -94,10 +94,10 @@ abstract contract NexvelSecurityUpgradeable is
         require(admin_ != address(0), "Admin zero");
 
         require(operator_ != address(0), "Operator zero");
+        require(registry_ != address(0), "Registry zero");
 
         __AccessControl_init();
         __Pausable_init();
-        __ReentrancyGuard_init();
 
         // Core authority roles
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);

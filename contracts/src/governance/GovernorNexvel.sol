@@ -68,7 +68,6 @@ contract GovernorNexvel is
         __GovernorTimelockControl_init(_timelock);
 
         __AccessControl_init();
-        __UUPSUpgradeable_init();
 
         // Grant UPGRADER_ROLE to the deployer (you may transfer later)
         _grantRole(UPGRADER_ROLE, msg.sender);
