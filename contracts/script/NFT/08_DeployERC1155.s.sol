@@ -80,11 +80,11 @@ contract DeployERC1155 is Script {
                             LOGS
         //////////////////////////////////////////////////////////////*/
         console2.log("======================================");
-          console2.log("NEXVEL ERC1155 DEPLOYED");
-          console2.log("======================================");
-          console2.log("Proxy         :", erc1155Proxy);
-          console2.log("Implementation:", address(impl));
-          console2.log("Registry      :", registryAddr);
-          console2.log("Registered    : YES");
-        }
+        console2.log("NEXVEL ERC1155 DEPLOYED");
+        console2.log("======================================");
+        console2.log("Proxy         :", erc1155Proxy);
+        console2.log("Implementation:", address(impl));
+        console2.log("Registry      :", registryAddr);
+        console2.log("Registered    : YES");
+    }
 }

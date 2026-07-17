@@ -24,45 +24,39 @@ contract SignatureAirdropTest is Test {
     // ------------------------------------------------------------
     // SETUP
     // ------------------------------------------------------------
-function setUp() public {
-    adminKey = 0xA11CE;
-    signerKey = 0xBEEF;
-    userKey = 0xCAFE;
+    function setUp() public {
+        adminKey = 0xA11CE;
+        signerKey = 0xBEEF;
+        userKey = 0xCAFE;
 
-    admin = vm.addr(adminKey);
-    signer = vm.addr(signerKey);
-    user = vm.addr(userKey);
+        admin = vm.addr(adminKey);
+        signer = vm.addr(signerKey);
+        user = vm.addr(userKey);
 
-    // Deploy token
-    token = new NexvelToken();
+        // Deploy token
+        token = new NexvelToken();
 
-    // Give mint role to test contract (if needed)
-    token.grantRole(token.MINTER_ROLE(), address(this));
+        // Give mint role to test contract (if needed)
+        token.grantRole(token.MINTER_ROLE(), address(this));
 
-    // Deploy airdrop
-    vm.prank(admin);
-    airdrop = new SignatureAirdrop("Nexvel Signature Airdrop", "1", admin);
+        // Deploy airdrop
+        vm.prank(admin);
+        airdrop = new SignatureAirdrop("Nexvel Signature Airdrop", "1", admin);
 
-    // Fund airdrop
-    token.mint(address(airdrop), CAP);
+        // Fund airdrop
+        token.mint(address(airdrop), CAP);
 
-    // Grant signer role
-    vm.prank(admin);
-    airdrop.grantRole(airdrop.SIGNER_ROLE(), signer);
+        // Grant signer role
+        vm.prank(admin);
+        airdrop.grantRole(airdrop.SIGNER_ROLE(), signer);
 
-    // Create round
-    vm.prank(admin);
-    airdrop.createRound(
-        ROUND_ID,
-        address(token),
-        block.timestamp - 1,
-        block.timestamp + 1 days,
-        CAP
-    );
+        // Create round
+        vm.prank(admin);
+        airdrop.createRound(ROUND_ID, address(token), block.timestamp - 1, block.timestamp + 1 days, CAP);
 
-    // Sanity check
-    assertEq(token.balanceOf(address(airdrop)), CAP);
-}
+        // Sanity check
+        assertEq(token.balanceOf(address(airdrop)), CAP);
+    }
 
     // ------------------------------------------------------------
     // INTERNAL SIGN HELPER

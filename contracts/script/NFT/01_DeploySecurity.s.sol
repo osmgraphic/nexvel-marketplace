@@ -30,19 +30,11 @@ contract DeploySecurity is Script {
         NexvelSecurityImpl impl = new NexvelSecurityImpl();
 
         // Encode initializer
-        bytes memory initData = abi.encodeWithSelector(
-            NexvelSecurityImpl.initialize.selector,
-            admin,
-            operator,
-            registry,
-            creators
-        );
+        bytes memory initData =
+            abi.encodeWithSelector(NexvelSecurityImpl.initialize.selector, admin, operator, registry, creators);
 
         // Deploy proxy
-        ERC1967Proxy proxy = new ERC1967Proxy(
-            address(impl),
-            initData
-        );
+        ERC1967Proxy proxy = new ERC1967Proxy(address(impl), initData);
 
         securityProxy = address(proxy);
 

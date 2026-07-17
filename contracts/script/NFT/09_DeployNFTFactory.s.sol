@@ -4,21 +4,18 @@ pragma solidity ^0.8.24;
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
 
-import {NexvelNFTFactory} 
-    from "../../src/marketplace/NexvelNFTFactory.sol";
+import {NexvelNFTFactory} from "../../src/marketplace/NexvelNFTFactory.sol";
 
 import {IRegistry} from "../../src/marketplace/registry/IRegistry.sol";
 
 contract DeployNFTFactory is Script {
-
     function run() external returns (address factory) {
-
         uint256 deployerKey = vm.envUint("PRIVATE_KEY");
 
-        address admin        = vm.envAddress("ADMIN_ADDRESS");
+        address admin = vm.envAddress("ADMIN_ADDRESS");
         address registryAddr = vm.envAddress("REGISTRY_ADDRESS");
-        address erc721Impl   = vm.envAddress("ERC721_IMPL");
-        address erc721AImpl  = vm.envAddress("ERC721A_IMPL");
+        address erc721Impl = vm.envAddress("ERC721_IMPL");
+        address erc721AImpl = vm.envAddress("ERC721A_IMPL");
 
         require(admin != address(0), "Admin zero");
         require(registryAddr.code.length > 0, "Registry not contract");
@@ -32,13 +29,7 @@ contract DeployNFTFactory is Script {
         /*//////////////////////////////////////////////////////////////
                             DEPLOY FACTORY
         //////////////////////////////////////////////////////////////*/
-        NexvelNFTFactory nftFactory =
-            new NexvelNFTFactory(
-                admin,
-                registryAddr,
-                erc721Impl,
-                erc721AImpl
-            );
+        NexvelNFTFactory nftFactory = new NexvelNFTFactory(admin, registryAddr, erc721Impl, erc721AImpl);
 
         factory = address(nftFactory);
 
